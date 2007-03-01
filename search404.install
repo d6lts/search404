@@ -4,7 +4,7 @@
  * Setup Search 404 by changing Drupal's 404-page to search404.
  */
 function search404_install() {
-    if (variable_get('site_404', '') == 'search404') {
+    if (variable_get('site_404', '') != 'search404') {
       variable_set('previous_site_404', variable_get('site_404', ''));
       variable_set('site_404', 'search404');
     }

@@ -16,7 +16,7 @@ function search404_menu($may_cache) {
       'title' => t('Search 404 settings'),
       'description' => t('Administer search 404.'),
       'callback' => 'drupal_get_form',
-      'callback argument' => array('search404_settings'),
+      'callback arguments' => array('search404_settings'),
       'access' => user_access('administer site configuration'),
       'type' => MENU_NORMAL_ITEM,
     );
@@ -52,14 +52,14 @@ function search404_page() {
         if (variable_get('search404_jump', false) && count($results) == 1) {
           drupal_set_message(t('The page you requested does not exist. A search for &quot;<i>%keys</i>&quot; resulted in this page.', array('%keys' => $keys)));
           // overwrite $_REQUEST['destination'] because it is set by drupal_not_found()
-          $_REQUEST['destination'] = 'node/' . $results[0]['node']->nid;
+          $_REQUEST['destination'] = 'node/'. $results[0]['node']->nid;
           drupal_goto();
         }
 
         // Otherwise, redirect to a search page
         drupal_set_message(t('The page you requested does not exist. For your convenience, a search was performed using the query &quot;<i>%keys</i>&quot;.', array('%keys' => $keys)));
         // overwrite $_REQUEST['destination'] because it is set by drupal_not_found()
-        $_REQUEST['destination'] = 'search/node/' . $keys;
+        $_REQUEST['destination'] = 'search/node/'. $keys;
         drupal_goto();
       }
       // If there are not results, tell the user

@@ -11,9 +11,7 @@ INSTALLATION:
 UNINSTALLTION:
 --------------
 1. Disable the module.
-2. Uninstall the module, which will set the 404 page
-   the path it was before install of this module.
-
+2. Uninstall the module, which will blank the the 404 page
 CREDITS:
 --------
 Written by Lars Sehested Geisler <drupal@larsgeisler.dk>

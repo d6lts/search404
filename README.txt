@@ -5,13 +5,19 @@ performs a search on the keywords in the URL.
 
 INSTALLATION:
 -------------
-1. Copy search404.module into your 'modules' directory.
-2. Enable the module at 'administer >> modules'.
+1. Extract the tar.gz into your 'modules' or directory.
+2. Enable the module at 'administer >> site building >> modules'.
 3. The module will automaticly replace the path to your 404 page with "search404"
+
+CONFIGURATION
+-------------
+1. Visit 'administer >> site configuration >> search 404 settings'
+
 UNINSTALLTION:
 --------------
 1. Disable the module.
 2. Uninstall the module, which will blank the the 404 page
+
 CREDITS:
 --------
 Written by Lars Sehested Geisler <drupal@larsgeisler.dk>

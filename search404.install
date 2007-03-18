@@ -1,5 +1,5 @@
 <?php
-/* $ID$ */
+//* $Id$
 /**
  * Setup Search 404 by changing Drupal's 404-page to search404.
  */
@@ -14,4 +14,7 @@ function search404_uninstall() {
   variable_del('search404_jump');
   variable_del('search404_use_or');
   variable_del('search404_ignore');
+  variable_del('search404_ignore_query');
+  varaible_del('search404_ignore_extensiopns');
+  variable_del('search404_use_search_engine');
 }

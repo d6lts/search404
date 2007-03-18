@@ -105,19 +105,18 @@ function search404_page() {
     if (!$keys) {
       $keys = search404_get_keys();
     }
-    $keys = check_plain($keys);
     if ($keys) {
       // TODO: watchdog?
       $results = module_invoke('node', 'search', 'search', $keys);
       if (isset($results) && is_array($results) && count($results) == 1 && variable_get('search404_jump', false)) {
         // First, check to see if there is exactly 1 result
-        drupal_set_message(t('The page you requested does not exist. A search for %keys resulted in this page.', array('%keys' => $keys)), 'status');
+        drupal_set_message(t('The page you requested does not exist. A search for %keys resulted in this page.', array('%keys' => check_plain($keys))), 'status');
         // overwrite $_REQUEST['destination'] because it is set by drupal_not_found()
         $_REQUEST['destination'] = 'node/'. $results[0]['node']->nid;
         drupal_goto();
       }
       else {
-        drupal_set_message(t('The page you requested does not exist. For your convenience, a search was performed using the query %keys.', array('%keys' => $keys)), 'error');
+        drupal_set_message(t('The page you requested does not exist. For your convenience, a search was performed using the query %keys.', array('%keys' => check_plain($keys))), 'error');
         if (isset($results) && is_array($results) && count($results) > 0) {
           drupal_add_css(drupal_get_path('module', 'search') .'/search.css', 'module', 'all', FALSE);
           // EVIL HAXX!

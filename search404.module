@@ -165,7 +165,7 @@ function search404_settings() {
   $form['search404_ignore'] = array(
     '#type' => 'textfield',
     '#title' => t('Words to ignore'),
-    '#description' => t('These words will be ignored from query. Separate words with a space, e.g.: "and in or the".'),
+    '#description' => t('These words will be ignored from query. Separate words with a space, e.g.: "and or the".'),
     '#default_value' => variable_get('search404_ignore', 'and or the'),
   );
   $form['search404_ignore_extensions'] = array(

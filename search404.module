@@ -34,14 +34,14 @@ function search404_menu($may_cache) {
 function search404_get_keys() {
   // Abort query on certain extensions, e.g: gif jpg jpeg png
   $extensions = preg_split('/\s+/', variable_get('search404_ignore_query', 'gif jpg jpeg bmp png'));
-  $extensions = trim(implode('|', $extensions)); 
+  $extensions = trim(implode('|', $extensions));
   if (!empty($extensions) && preg_match("/\.($extensions)$/", $_REQUEST['destination'])) {
     return false;
   }
   $keys = $_REQUEST['destination'];
   // Ingore certain extensions from query
   $extensions = preg_split('/\s+/', variable_get('search404_ignore_extensions', 'htm html php'));
-  $extensions = trim(implode('|', $extensions)); 
+  $extensions = trim(implode('|', $extensions));
   if (!empty($extensions)) {
      $keys = preg_replace("/\.($extensions)$/", '', $keys);
   }
@@ -84,7 +84,7 @@ function search404_search_engine_query() {
       }
     }
   }
-  
+
   return false;
 }
 
@@ -123,21 +123,21 @@ function search404_page() {
             $oldgetq = $_GET['q'];
             $olddestination = $_REQUEST['destination'];
             unset($_REQUEST['destination']);
-            $_GET['q'] = "node/search/$keys";
-              $results = theme('search_page', $results, 'node');   
+            $_GET['q'] = "search/node/$keys";
+            $results = theme('search_page', $results, 'node');
             $_GET['q'] = $oldgetq;
             $_REQUEST['destination'] = $olddestination;
-          // END OF EVIL HAXX!     
+          // END OF EVIL HAXX!
         }
         else {
-          $results = search_help('search#noresults'); 
+          $results = search_help('search#noresults');
         }
         $results = theme('box', t('Search results'), $results);
       }
     }
-    // Construct the search form. 
+    // Construct the search form.
     $output .= drupal_get_form('search_form', NULL, $keys, 'node');
-    $output .= $results;  
+    $output .= $results;
   }
 
   return $output;

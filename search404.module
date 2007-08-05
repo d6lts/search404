@@ -39,6 +39,10 @@ function search404_get_keys() {
     return false;
   }
   $keys = $_REQUEST['destination'];
+  if (!empty(variable_get('search404_regex'), '')) {
+  	$keys = preg_grep(variable_get('search404_regex'), $keys);
+  	$keys = $keys[0];
+  }
   // Ingore certain extensions from query
   $extensions = preg_split('/\s+/', variable_get('search404_ignore_extensions', 'htm html php'));
   $extensions = trim(implode('|', $extensions));
@@ -115,6 +119,12 @@ function search404_page() {
         $_REQUEST['destination'] = 'node/'. $results[0]['node']->nid;
         drupal_goto();
       }
+      elseif (isset($results) && is_array($results) && count($results) > 1 && variable_get('search404_first', false)) {
+        drupal_set_message(t('The page you requested does not exist. A search for %keys resulted in this page.', array('%keys' => check_plain($keys))), 'status');
+        // overwrite $_REQUEST['destination'] because it is set by drupal_not_found()
+        $_REQUEST['destination'] = 'node/'. $results[0]['node']->nid;
+        drupal_goto();
+      }
       else {
         drupal_set_message(t('The page you requested does not exist. For your convenience, a search was performed using the query %keys.', array('%keys' => check_plain($keys))), 'error');
         if (isset($results) && is_array($results) && count($results) > 0) {
@@ -152,33 +162,51 @@ function search404_settings() {
     '#title' => t('Jump directly to the search result when there is only one result.'),
     '#default_value' => variable_get('search404_jump', false),
   );
-  $form['search404_use_or'] = array(
+  $form['search404_first'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('Jump directly to the first search result when there are multiple results.'),
+    '#default_value' => variable_get('search404_first', false),
+  );
+  $form['advanced'] = array(
+    '#type' => 'fieldset',
+    '#title' => t('Advanced settings'),
+    '#description' => t("WARNING. Some of these settings can mess up stuff, don't touch unless you know what you are doing."),
+    '#collapsible' => TRUE,
+    '#collapsed' => TRUE,
+  );
+  $form['advanced']['search404_use_or'] = array(
     '#type' => 'checkbox',
     '#title' => t('Use OR between keywords when searching.'),
     '#default_value' => variable_get('search404_use_or', false),
   );
-  $form['search404_use_search_engine'] = array(
+  $form['advanced']['search404_use_search_engine'] = array(
     '#type' => 'checkbox',
     '#title' => t('Use auto-detection of keywords from search engine referer. BETA! Not for production sites, use at your own risk.'),
     '#default_value' => variable_get('search404_use_search_engine', false),
   );
-  $form['search404_ignore'] = array(
+  $form['advanced']['search404_ignore'] = array(
     '#type' => 'textfield',
     '#title' => t('Words to ignore'),
     '#description' => t('These words will be ignored from query. Separate words with a space, e.g.: "and or the".'),
     '#default_value' => variable_get('search404_ignore', 'and or the'),
   );
-  $form['search404_ignore_extensions'] = array(
+  $form['advanced']['search404_ignore_extensions'] = array(
     '#type' => 'textfield',
     '#title' => t('Extensions to ignore'),
     '#description' => t('These extensions will be ignored from query. Separate extensions with a space, e.g.: "htm html php". Do not include leading dot.'),
     '#default_value' => variable_get('search404_ignore_extensions', 'htm html php'),
   );
-  $form['search404_ignore_query'] = array(
+  $form['advanced']['search404_ignore_query'] = array(
     '#type' => 'textfield',
     '#title' => t('Extensions to abort search'),
     '#description' => t('A search will not be performed for a query ending in the following extensions. Separate extensions with a space, e.g.: "gif jpg jpeg bmp png". Do not include leading dot.'),
     '#default_value' => variable_get('search404_ignore_query', 'gif jpg jpeg bmp png'),
+  );
+  $form['advanced']['search404_regex'] = array(
+    '#type' => 'textfield',
+    '#title' => t('PCRE REGEX'),
+    '#description' => t('This regex will applied to all queries. It uses the code:<p>%code</p>Look directly at the source code to understand underlying syntax. See also <a href="http://php.net/pcre">PCRE pages in the PHP Manual</a>.', array('%code' => "\$keys = preg_grep(variable_get('search404_regex'), \$keys);\n\$keys = \$keys[0];", '%function' => 'search404_get_keys()')),
+    '#default_value' => variable_get(''),
   );
 
   return system_settings_form($form);

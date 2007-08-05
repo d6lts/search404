@@ -11,6 +11,7 @@ function search404_uninstall() {
   if (variable_get('site_404', '') == 'search404') {
     variable_del('site_404');
   }
+  variable_del('search404_first');
   variable_del('search404_jump');
   variable_del('search404_use_or');
   variable_del('search404_ignore');

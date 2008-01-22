@@ -39,10 +39,11 @@ function search404_get_keys() {
     return false;
   }
   $keys = $_REQUEST['destination'];
-  if (!empty(variable_get('search404_regex'), '')) {
-  	$keys = preg_grep(variable_get('search404_regex'), $keys);
-  	$keys = $keys[0];
-  }
+  $misc_var = variable_get('search404_regex', '');
+  if (!empty($misc_var)) {
+	$keys = preg_grep($misc_var, $keys);
+  	$keys = $keys[0]; 
+ }
   // Ingore certain extensions from query
   $extensions = preg_split('/\s+/', variable_get('search404_ignore_extensions', 'htm html php'));
   $extensions = trim(implode('|', $extensions));
@@ -54,7 +55,10 @@ function search404_get_keys() {
 
   // Ignore certain words
   $keys = array_diff($keys, explode(' ', variable_get('search404_ignore', 'and or the')));
-
+  //Sanitize the keys
+  foreach ($keys as $a => $b) {
+    $keys[$a] = check_plain($b);
+  }
   $modifier = variable_get('search404_use_or', false) ? ' OR ' : ' ';
   $keys = trim(implode($modifier, $keys));
   return $keys;
@@ -62,9 +66,6 @@ function search404_get_keys() {
 
 /**
  * Detect search from search engine (BETA)
- * WARNING: This function can potentially return dangerous
- *              potential SQL inject/XSS
- * data. Return must be sanatized before use.
  */
 function search404_search_engine_query() {
   $engines = array(
@@ -206,7 +207,7 @@ function search404_settings() {
     '#type' => 'textfield',
     '#title' => t('PCRE REGEX'),
     '#description' => t('This regex will applied to all queries. It uses the code:<p>%code</p>Look directly at the source code to understand underlying syntax. See also <a href="http://php.net/pcre">PCRE pages in the PHP Manual</a>.', array('%code' => "\$keys = preg_grep(variable_get('search404_regex'), \$keys);\n\$keys = \$keys[0];", '%function' => 'search404_get_keys()')),
-    '#default_value' => variable_get(''),
+    '#default_value' => variable_get('search404_regex',''),
   );
 
   return system_settings_form($form);

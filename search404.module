@@ -6,11 +6,10 @@
  */
 function search404_menu($may_cache) {
   $items = array();
-
   if ($may_cache) {
     $items[] = array('path' => 'search404',
       'title' => t('Page not found'), 'access' => true,
-      'callback' => 'search404_page', 'type' => MENU_CALLBACK);
+      'callback' => 'search404_page', 'type' => MENU_LOCAL_TASK);
     $items[] = array(
       'path' => 'admin/settings/search404',
       'title' => t('Search 404 settings'),
@@ -20,7 +19,7 @@ function search404_menu($may_cache) {
       'access' => user_access('administer site configuration'),
       'type' => MENU_NORMAL_ITEM,
     );
-  }
+   }
 
   return $items;
 }
@@ -55,7 +54,6 @@ function search404_get_keys() {
 
   // Ignore certain words
   $keys = array_diff($keys, explode(' ', variable_get('search404_ignore', 'and or the')));
-  //Sanitize the keys
   foreach ($keys as $a => $b) {
     $keys[$a] = check_plain($b);
   }
@@ -66,6 +64,9 @@ function search404_get_keys() {
 
 /**
  * Detect search from search engine (BETA)
+ * WARNING: This function can potentially return dangerous
+ *              potential SQL inject/XSS
+ * data. Return must be sanatized before use.
  */
 function search404_search_engine_query() {
   $engines = array(
@@ -141,6 +142,7 @@ function search404_page() {
           // END OF EVIL HAXX!
         }
         else {
+
           $results = search_help('search#noresults');
         }
         $results = theme('box', t('Search results'), $results);

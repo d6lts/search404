@@ -78,9 +78,9 @@ function search404_search_engine_query() {
     'msn' => 'q',
     'yahoo' => 'p',
   );
-  $parsed_url = parse_url($_SERVER['HTTP_REFERER']);
-  $remote_host = $parsed_url['host'];
-  $query_string = $parsed_url['query'];
+  $parsed_url = parse_url($_SERVER['HTTP_REFERER']);drupal_set_message('Parsed url :'.$parsed_url);
+  $remote_host = $parsed_url['host'];drupal_set_message('Remote host :'.$remote_host);
+  $query_string = $parsed_url['query'];drupal_set_message('Query string :'.$query_string);
   parse_str($query_string, $query);
 
   if (!$parsed_url === false && !empty($remote_host) && !empty($query_string) && count($query)) {
@@ -142,7 +142,6 @@ function search404_page() {
           // END OF EVIL HAXX!
         }
         else {
-
           $results = search_help('search#noresults');
         }
         $results = theme('box', t('Search results'), $results);

@@ -6,10 +6,11 @@
  */
 function search404_menu($may_cache) {
   $items = array();
+
   if ($may_cache) {
     $items[] = array('path' => 'search404',
       'title' => t('Page not found'), 'access' => true,
-      'callback' => 'search404_page', 'type' => MENU_LOCAL_TASK);
+      'callback' => 'search404_page', 'type' => MENU_CALLBACK);
     $items[] = array(
       'path' => 'admin/settings/search404',
       'title' => t('Search 404 settings'),
@@ -19,7 +20,7 @@ function search404_menu($may_cache) {
       'access' => user_access('administer site configuration'),
       'type' => MENU_NORMAL_ITEM,
     );
-   }
+  }
 
   return $items;
 }
@@ -78,9 +79,9 @@ function search404_search_engine_query() {
     'msn' => 'q',
     'yahoo' => 'p',
   );
-  $parsed_url = parse_url($_SERVER['HTTP_REFERER']);drupal_set_message('Parsed url :'.$parsed_url);
-  $remote_host = $parsed_url['host'];drupal_set_message('Remote host :'.$remote_host);
-  $query_string = $parsed_url['query'];drupal_set_message('Query string :'.$query_string);
+  $parsed_url = parse_url($_SERVER['HTTP_REFERER']);
+  $remote_host = $parsed_url['host'];
+  $query_string = $parsed_url['query'];
   parse_str($query_string, $query);
 
   if (!$parsed_url === false && !empty($remote_host) && !empty($query_string) && count($query)) {
@@ -142,6 +143,7 @@ function search404_page() {
           // END OF EVIL HAXX!
         }
         else {
+
           $results = search_help('search#noresults');
         }
         $results = theme('box', t('Search results'), $results);
@@ -151,8 +153,21 @@ function search404_page() {
     $output .= drupal_get_form('search_form', NULL, $keys, 'node');
     $output .= $results;
   }
-
-  return $output;
+  /*
+   * Start EVIL HAXX 2
+   * This was done to display blocks left and right of page, if the option is set from Search404 
+   * Settings Page.
+   */
+  if (variable_get('search404_block_show', true)) {
+    print theme('page', $output);
+    drupal_page_footer();
+    unset($output);
+    exit (0);
+  }
+  else {
+    return $output;    
+  }
+	//End of EVIL HAXX 2
 }
 
 /**
@@ -168,6 +183,12 @@ function search404_settings() {
     '#type' => 'checkbox',
     '#title' => t('Jump directly to the first search result when there are multiple results.'),
     '#default_value' => variable_get('search404_first', false),
+  );
+	//Added for displaying blocks for 404 searches
+  $form['search404_block_show'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('Show Left and Right blocks in Page when a 404 Search occurs'),
+    '#default_value' => variable_get('search404_block_show', false),
   );
   $form['advanced'] = array(
     '#type' => 'fieldset',

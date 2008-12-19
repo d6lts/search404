@@ -158,7 +158,7 @@ function search404_page() {
    * This was done to display blocks left and right of page, if the option is set from Search404 
    * Settings Page.
    */
-  if (variable_get('search404_block_show', true)) {
+  if (variable_get('search404_block_show', false)) {
     print theme('page', $output);
     drupal_page_footer();
     unset($output);

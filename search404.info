@@ -2,8 +2,4 @@
 name = Search 404
 description = Search 404
 dependencies = search
-; Information added by drupal.org packaging script on 2008-03-04
-version = "5.x-1.x-dev"
-project = "search404"
-datestamp = "1204632473"
 

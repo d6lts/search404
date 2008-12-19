@@ -127,7 +127,7 @@ function search404_page() {
       }
       else {
         drupal_set_message(t('The page you requested does not exist. For your convenience, a search was performed using the query %keys.', array('%keys' => check_plain($keys))), 'error');
-        if (isset($results) && is_array($results) && count($rensults) > 0) {
+        if (isset($results) && is_array($results) && count($results) > 0) {
           drupal_add_css(drupal_get_path('module', 'search') .'/search.css', 'module', 'all', FALSE);
           // EVIL HAXX!
             $oldgetq = $_GET['q'];
@@ -155,7 +155,7 @@ function search404_page() {
    * This was done to display blocks left and right of page, if the option is set from Search404 
    * Settings Page.
    */
-  if (variable_get('search404_block_show', true)) {
+  if (variable_get('search404_block_show', false)) {
     print theme('page', $output);
     drupal_page_footer();
     unset($output);

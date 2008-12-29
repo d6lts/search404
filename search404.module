@@ -152,7 +152,7 @@ function search404_page() {
   
   /*
    * Start EVIL HAXX 2
-   * This was done to display blocks left and right of page, if the option is set from Search404 
+   * This was done to display sidebars left and right of page, if the option is set from Search404 
    * Settings Page.
    */
   if (variable_get('search404_block_show', false)) {
@@ -185,7 +185,7 @@ function search404_settings() {
   //Added for displaying blocks for 404 searches
   $form['search404_block_show'] = array(
     '#type' => 'checkbox',
-    '#title' => t('Show Left and Right blocks in Page when a 404 Search occurs'),
+    '#title' => t('Show Left and Right sidebars in Page when a 404 Search occurs'),
     '#default_value' => variable_get('search404_block_show', false),
   );
   $form['advanced'] = array(

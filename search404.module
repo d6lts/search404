@@ -100,7 +100,7 @@ function search404_search_engine_query() {
  * Beware of messy code
  */
 function search404_page() {
-  $output = '<p>'. t('The page you requested was not found.') .'</p>';
+  drupal_set_title(t('Page not found'));
   if (module_exists('search') && user_access('search content')) {
     $keys = "";
     if (variable_get('search404_use_search_engine', false)) {
@@ -146,8 +146,7 @@ function search404_page() {
       }
     }
     // Construct the search form.
-    $output .= drupal_get_form('search_form', NULL, $keys, 'node');
-    $output .= $results;
+    $output = drupal_get_form('search_form', NULL, $keys, 'node') . $results;
   }
   
   /*

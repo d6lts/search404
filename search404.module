@@ -65,7 +65,7 @@ function search404_get_keys() {
 }
 
 /**
- * Detect search from search engine (BETA)
+ * Detect search from search engine
  */
 function search404_search_engine_query() {
   $engines = array(
@@ -202,7 +202,7 @@ function search404_settings() {
   );
   $form['advanced']['search404_use_search_engine'] = array(
     '#type' => 'checkbox',
-    '#title' => t('Use auto-detection of keywords from search engine referer. BETA! Not for production sites, use at your own risk.'),
+    '#title' => t('Use auto-detection of keywords from search engine referer.'),
     '#default_value' => variable_get('search404_use_search_engine', false),
   );
   $form['advanced']['search404_ignore'] = array(
@@ -225,8 +225,8 @@ function search404_settings() {
   );
   $form['advanced']['search404_regex'] = array(
     '#type' => 'textfield',
-    '#title' => t('PCRE regex'),
-    '#description' => t('This regex will applied to all queries. It uses the code:<p>%code</p>Look directly at the source code to understand underlying syntax. See also <a href="http://php.net/pcre">PCRE pages in the PHP Manual</a>.', array('%code' => "\$keys = preg_grep(variable_get('search404_regex'), \$keys);\n\$keys = \$keys[0];", '%function' => 'search404_get_keys()')),
+    '#title' => t('PCRE Regular Expression Replace'),
+    '#description' => t('This regular expression will applied to all queries You can use it to replace the destination address based on the patterns you provide here. It uses the code:<p>%code</p>Look directly at the source code to understand underlying syntax. See also <a href="http://php.net/pcre">PCRE pages in the PHP Manual</a>.', array('%code' => "\$keys = preg_grep(variable_get('search404_regex'), \$keys);\n\$keys = \$keys[0];", '%function' => 'search404_get_keys()')),
     '#default_value' => variable_get('search404_regex',''),
   );
   return system_settings_form($form);

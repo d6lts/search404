@@ -39,10 +39,10 @@ function search404_get_keys() {
     return false;
   }
   $keys = $_REQUEST['destination'];
-  $misc_var = variable_get('search404_regex', '');
-  if (!empty($misc_var)) {
-	$keys = preg_grep($misc_var, $keys);
-  	$keys = $keys[0]; 
+  $regex_filter = variable_get('search404_regex', '');
+  $keys_array[] = $keys;
+  if (!empty($regex_filter)) {
+	  $keys = preg_replace("/".$regex_filter."/", '', $keys);
  }
   // Ingore certain extensions from query
   $extensions = preg_split('/\s+/', variable_get('search404_ignore_extensions', 'htm html php'));
@@ -72,9 +72,8 @@ function search404_search_engine_query() {
     'altavista' => 'q',
     'aol' => 'query',
     'google' => 'q',
-    'live' => 'q',
+    'bing' => 'q',
     'lycos' => 'query',
-    'msn' => 'q',
     'yahoo' => 'p',
   );
   $parsed_url = parse_url($_SERVER['HTTP_REFERER']);
@@ -203,6 +202,7 @@ function search404_settings() {
   $form['advanced']['search404_use_search_engine'] = array(
     '#type' => 'checkbox',
     '#title' => t('Use auto-detection of keywords from search engine referer.'),
+    '#description' => t('This feature will conduct a search based on the query string got from a search engine if the URL of the search result points to a 404 Page in the current website. Currently supported search engines: Google, Yahoo, Altavista, Lycos, Bing and AOL'),
     '#default_value' => variable_get('search404_use_search_engine', false),
   );
   $form['advanced']['search404_ignore'] = array(
@@ -214,7 +214,7 @@ function search404_settings() {
   $form['advanced']['search404_ignore_extensions'] = array(
     '#type' => 'textfield',
     '#title' => t('Extensions to ignore'),
-    '#description' => t('These extensions will be ignored from query. Separate extensions with a space, e.g.: "htm html php". Do not include leading dot.'),
+    '#description' => t('These extensions will be ignored from query. Separate extensions with a space, e.g.: "htm html php". Do not include leading dot. Eg: http://www.example.com/invalid/page.php will only search for "invalid page"'),
     '#default_value' => variable_get('search404_ignore_extensions', 'htm html php'),
   );
   $form['advanced']['search404_ignore_query'] = array(
@@ -225,8 +225,8 @@ function search404_settings() {
   );
   $form['advanced']['search404_regex'] = array(
     '#type' => 'textfield',
-    '#title' => t('PCRE Regular Expression Replace'),
-    '#description' => t('This regular expression will applied to all queries You can use it to replace the destination address based on the patterns you provide here. It uses the code:<p>%code</p>Look directly at the source code to understand underlying syntax. See also <a href="http://php.net/pcre">PCRE pages in the PHP Manual</a>.', array('%code' => "\$keys = preg_grep(variable_get('search404_regex'), \$keys);\n\$keys = \$keys[0];", '%function' => 'search404_get_keys()')),
+    '#title' => t('PCRE Filter'),
+    '#description' => t('This regular expression will applied to filter all queries. The queries that match the given expression will EXCLUDED from a search.<br /> Note: Do not use a /string/ when defining the PCRE, instead just define the string without the "//"<br/> On how to use a PCRE Regex please refer <a href="http://php.net/pcre">PCRE pages in the PHP Manual</a>.'),
     '#default_value' => variable_get('search404_regex',''),
   );
   return system_settings_form($form);

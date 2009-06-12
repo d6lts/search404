@@ -177,20 +177,19 @@ function search404_settings() {
   );
   $form['search404_first'] = array(
     '#type' => 'checkbox',
-    '#title' => t('Jump directly to the first search result when there are multiple results.'),
+    '#title' => t('Jump directly to the first search result even when there are multiple results.'),
     '#default_value' => variable_get('search404_first', false),
   );
   //Added for displaying blocks for 404 searches
   $form['search404_block_show'] = array(
     '#type' => 'checkbox',
-    '#title' => t('Show Left and Right sidebars in Page when a 404 Search occurs'),
+    '#title' => t('Show left and right sidebars in page when a 404 search occurs'),
     '#default_value' => variable_get('search404_block_show', false),
   );
   $form['advanced'] = array(
     '#type' => 'fieldset',
     '#title' => t('Advanced settings'),
-    '#description' => t("WARNING. Some of these settings can mess up stuff, don't touch unless you know what you are
-		doing."),
+    //'#description' => t("WARNING. Some of these settings can mess up stuff, don't touch unless you know what you are doing."),
     '#collapsible' => TRUE,
     '#collapsed' => TRUE,
   );
@@ -202,31 +201,31 @@ function search404_settings() {
   $form['advanced']['search404_use_search_engine'] = array(
     '#type' => 'checkbox',
     '#title' => t('Use auto-detection of keywords from search engine referer.'),
-    '#description' => t('This feature will conduct a search based on the query string got from a search engine if the URL of the search result points to a 404 Page in the current website. Currently supported search engines: Google, Yahoo, Altavista, Lycos, Bing and AOL'),
+    '#description' => t('This feature will conduct a search based on the query string got from a search engine if the URL of the search result points to a 404 page in the current website. Currently supported search engines: Google, Yahoo, Altavista, Lycos, Bing and AOL'),
     '#default_value' => variable_get('search404_use_search_engine', false),
   );
   $form['advanced']['search404_ignore'] = array(
     '#type' => 'textfield',
     '#title' => t('Words to ignore'),
-    '#description' => t('These words will be ignored from query. Separate words with a space, e.g.: "and or the".'),
+    '#description' => t('These words will be ignored from the search query. Separate words with a space, e.g.: "and or the".'),
     '#default_value' => variable_get('search404_ignore', 'and or the'),
   );
   $form['advanced']['search404_ignore_extensions'] = array(
     '#type' => 'textfield',
     '#title' => t('Extensions to ignore'),
-    '#description' => t('These extensions will be ignored from query. Separate extensions with a space, e.g.: "htm html php". Do not include leading dot. Eg: http://www.example.com/invalid/page.php will only search for "invalid page"'),
+    '#description' => t('These extensions will be ignored from the search query, e.g.: http://www.example.com/invalid/page.php will only search for "invalid page". Separate extensions with a space, e.g.: "htm html php". Do not include leading dot.'),
     '#default_value' => variable_get('search404_ignore_extensions', 'htm html php'),
   );
   $form['advanced']['search404_ignore_query'] = array(
     '#type' => 'textfield',
     '#title' => t('Extensions to abort search'),
-    '#description' => t('A search will not be performed for a query ending in the following extensions. Separate extensions with a space, e.g.: "gif jpg jpeg bmp png". Do not include leading dot.'),
+    '#description' => t('A search will not be performed for a query ending in these extensions. Separate extensions with a space, e.g.: "gif jpg jpeg bmp png". Do not include leading dot.'),
     '#default_value' => variable_get('search404_ignore_query', 'gif jpg jpeg bmp png'),
   );
   $form['advanced']['search404_regex'] = array(
     '#type' => 'textfield',
-    '#title' => t('PCRE Filter'),
-    '#description' => t('This regular expression will applied to filter all queries. The parts of the path that match the expression will be EXCLUDED from the search.<br /> On how to use a PCRE Regex please refer <a href="http://php.net/pcre">PCRE pages in the PHP Manual</a>.'),
+    '#title' => t('PCRE filter'),
+    '#description' => t('This regular expression will be applied to filter all queries. The parts of the path that match the expression will be EXCLUDED from the search. You do NOT have to enclose the regex in forward slashes when defining the PCRE. e.g.: use "[foo]bar" instead of "/[foo]bar/". On how to use a PCRE Regex please refer <a href="http://php.net/pcre">PCRE pages in the PHP Manual</a>.'),
     '#default_value' => variable_get('search404_regex',''),
   );
   return system_settings_form($form);

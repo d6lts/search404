@@ -226,7 +226,7 @@ function search404_settings() {
   $form['advanced']['search404_regex'] = array(
     '#type' => 'textfield',
     '#title' => t('PCRE Filter'),
-    '#description' => t('This regular expression will applied to filter all queries. The queries that match the given expression will EXCLUDED from a search.<br /> Note: Do not use a /string/ when defining the PCRE, instead just define the string without the "//"<br/> On how to use a PCRE Regex please refer <a href="http://php.net/pcre">PCRE pages in the PHP Manual</a>.'),
+    '#description' => t('This regular expression will applied to filter all queries. The parts of the path that match the expression will be EXCLUDED from the search.<br /> On how to use a PCRE Regex please refer <a href="http://php.net/pcre">PCRE pages in the PHP Manual</a>.'),
     '#default_value' => variable_get('search404_regex',''),
   );
   return system_settings_form($form);

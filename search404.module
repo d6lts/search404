@@ -38,11 +38,11 @@ function search404_get_keys() {
   if (!empty($extensions) && preg_match("/\.($extensions)$/", $_REQUEST['destination'])) {
     return false;
   }
-  $keys = $_REQUEST['destination'];
-  $misc_var = variable_get('search404_regex', '');
-  if (!empty($misc_var)) {
-	$keys = preg_grep($misc_var, $keys);
-  	$keys = $keys[0]; 
+  $keys = $_REQUEST['destination'] ? $_REQUEST['destination'] : $_REQUEST['q'];
+  $regex_filter = variable_get('search404_regex', '');
+  $keys_array[] = $keys;
+  if (!empty($regex_filter)) {
+    $keys = preg_replace("/".$regex_filter."/", '', $keys);
  }
   // Ingore certain extensions from query
   $extensions = preg_split('/\s+/', variable_get('search404_ignore_extensions', 'htm html php'));
@@ -64,7 +64,7 @@ function search404_get_keys() {
 }
 
 /**
- * Detect search from search engine (BETA)
+ * Detect search from search engine
  * WARNING: This function can potentially return dangerous
  *              potential SQL inject/XSS
  * data. Return must be sanatized before use.
@@ -74,9 +74,8 @@ function search404_search_engine_query() {
     'altavista' => 'q',
     'aol' => 'query',
     'google' => 'q',
-    'live' => 'q',
+    'bing' => 'q',
     'lycos' => 'query',
-    'msn' => 'q',
     'yahoo' => 'p',
   );
   $parsed_url = parse_url($_SERVER['HTTP_REFERER']);
@@ -106,6 +105,8 @@ function search404_page() {
 
   if (module_exists('search') && user_access('search content')) {
     $keys = "";
+    // if apachesolr_search is installed use apachesolr_search instead default node search
+    $type_search = (module_exists('apachesolr_search')) ? 'apachesolr_search' : 'node';
     if (variable_get('search404_use_search_engine', false)) {
       $keys = search404_search_engine_query();
     }
@@ -114,7 +115,7 @@ function search404_page() {
     }
     if ($keys) {
       // TODO: watchdog?
-      $results = module_invoke('node', 'search', 'search', $keys);
+      $results = module_invoke($type_search, 'search', 'search', $keys);
       if (isset($results) && is_array($results) && count($results) == 1 && variable_get('search404_jump', false)) {
         // First, check to see if there is exactly 1 result
         drupal_set_message(t('The page you requested does not exist. A search for %keys resulted in this page.', array('%keys' => check_plain($keys))), 'status');
@@ -136,7 +137,7 @@ function search404_page() {
             $oldgetq = $_GET['q'];
             $olddestination = $_REQUEST['destination'];
             unset($_REQUEST['destination']);
-            $_GET['q'] = "search/node/$keys";
+            $_GET['q'] = "search/$type_search/$keys";
             $results = theme('search_page', $results, 'node');
             $_GET['q'] = $oldgetq;
             $_REQUEST['destination'] = $olddestination;
@@ -193,7 +194,7 @@ function search404_settings() {
   $form['advanced'] = array(
     '#type' => 'fieldset',
     '#title' => t('Advanced settings'),
-    '#description' => t("WARNING. Some of these settings can mess up stuff, don't touch unless you know what you are doing."),
+    //'#description' => t("WARNING. Some of these settings can mess up stuff, don't touch unless you know what you are doing."),
     '#collapsible' => TRUE,
     '#collapsed' => TRUE,
   );
@@ -204,7 +205,8 @@ function search404_settings() {
   );
   $form['advanced']['search404_use_search_engine'] = array(
     '#type' => 'checkbox',
-    '#title' => t('Use auto-detection of keywords from search engine referer. BETA! Not for production sites, use at your own risk.'),
+    '#title' => t('Use auto-detection of keywords from search engine referer.'),
+    '#description' => t('This feature will conduct a search based on the query string got from a search engine if the URL of the search result points to a 404 page in the current website. Currently supported search engines: Google, Yahoo, Altavista, Lycos, Bing and AOL'),
     '#default_value' => variable_get('search404_use_search_engine', false),
   );
   $form['advanced']['search404_ignore'] = array(
@@ -216,7 +218,7 @@ function search404_settings() {
   $form['advanced']['search404_ignore_extensions'] = array(
     '#type' => 'textfield',
     '#title' => t('Extensions to ignore'),
-    '#description' => t('These extensions will be ignored from query. Separate extensions with a space, e.g.: "htm html php". Do not include leading dot.'),
+    '#description' => t('These extensions will be ignored from the search query, e.g.: http://www.example.com/invalid/page.php will only search for "invalid page". Separate extensions with a space, e.g.: "htm html php". Do not include leading dot.'),
     '#default_value' => variable_get('search404_ignore_extensions', 'htm html php'),
   );
   $form['advanced']['search404_ignore_query'] = array(
@@ -227,8 +229,8 @@ function search404_settings() {
   );
   $form['advanced']['search404_regex'] = array(
     '#type' => 'textfield',
-    '#title' => t('PCRE REGEX'),
-    '#description' => t('This regex will applied to all queries. It uses the code:<p>%code</p>Look directly at the source code to understand underlying syntax. See also <a href="http://php.net/pcre">PCRE pages in the PHP Manual</a>.', array('%code' => "\$keys = preg_grep(variable_get('search404_regex'), \$keys);\n\$keys = \$keys[0];", '%function' => 'search404_get_keys()')),
+    '#title' => t('PCRE filter'),
+    '#description' => t('This regular expression will be applied to filter all queries. The parts of the path that match the expression will be EXCLUDED from the search. You do NOT have to enclose the regex in forward slashes when defining the PCRE. e.g.: use "[foo]bar" instead of "/[foo]bar/". On how to use a PCRE Regex please refer <a href="http://php.net/pcre">PCRE pages in the PHP Manual</a>.'),
     '#default_value' => variable_get('search404_regex',''),
   );
 

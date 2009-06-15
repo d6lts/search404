@@ -38,7 +38,7 @@ function search404_get_keys() {
   if (!empty($extensions) && preg_match("/\.($extensions)$/", $_REQUEST['destination'])) {
     return false;
   }
-  $keys = $_REQUEST['destination'];
+  $keys = $_REQUEST['destination'] ? $_REQUEST['destination'] : $_REQUEST['q'];
   $regex_filter = variable_get('search404_regex', '');
   $keys_array[] = $keys;
   if (!empty($regex_filter)) {
@@ -102,6 +102,8 @@ function search404_page() {
   drupal_set_title(t('Page not found'));
   if (module_exists('search') && user_access('search content')) {
     $keys = "";
+    // if apachesolr_search is installed use apachesolr_search instead default node search
+    $type_search = (module_exists('apachesolr_search')) ? 'apachesolr_search' : 'node';
     if (variable_get('search404_use_search_engine', false)) {
       $keys = search404_search_engine_query();
     }
@@ -110,7 +112,7 @@ function search404_page() {
     }
     if ($keys) {
       // TODO: watchdog?
-      $results = module_invoke('node', 'search', 'search', $keys);
+      $results = module_invoke($type_search, 'search', 'search', $keys);
       if (isset($results) && is_array($results) && count($results) == 1 && variable_get('search404_jump', false)) {
         // First, check to see if there is exactly 1 result
         drupal_set_message(t('The page you requested does not exist. A search for %keys resulted in this page.', array('%keys' => check_plain($keys))), 'status');
@@ -132,7 +134,7 @@ function search404_page() {
             $oldgetq = $_GET['q'];
             $olddestination = $_REQUEST['destination'];
             unset($_REQUEST['destination']);
-            $_GET['q'] = "search/node/$keys";
+            $_GET['q'] = "search/$type_search/$keys";
             $results = theme('search_results', $results, 'node');
             $_GET['q'] = $oldgetq;
             $_REQUEST['destination'] = $olddestination;
@@ -145,7 +147,7 @@ function search404_page() {
       }
     }
     // Construct the search form.
-    $output = drupal_get_form('search_form', NULL, $keys, 'node') . $results;
+    $output = drupal_get_form('search_form', NULL, $keys, $type_search) . $results;
   }
   
   /*

@@ -112,38 +112,43 @@ function search404_page() {
     }
     if ($keys) {
       // TODO: watchdog?
-      $results = module_invoke($type_search, 'search', 'search', $keys);
-      if (isset($results) && is_array($results) && count($results) == 1 && variable_get('search404_jump', false)) {
-        // First, check to see if there is exactly 1 result
-        drupal_set_message(t('The page you requested does not exist. A search for %keys resulted in this page.', array('%keys' => check_plain($keys))), 'status');
-        // overwrite $_REQUEST['destination'] because it is set by drupal_not_found()
-        $_REQUEST['destination'] = 'node/'. $results[0]['node']->nid;
-        drupal_goto();
-      }
-      elseif (isset($results) && is_array($results) && count($results) > 1 && variable_get('search404_first', false)) {
-        drupal_set_message(t('The page you requested does not exist. A search for %keys resulted in this page.', array('%keys' => check_plain($keys))), 'status');
-        // overwrite $_REQUEST['destination'] because it is set by drupal_not_found()
-        $_REQUEST['destination'] = 'node/'. $results[0]['node']->nid;
-        drupal_goto();
-      }
-      else {
-        drupal_set_message(t('The page you requested does not exist. For your convenience, a search was performed using the query %keys.', array('%keys' => check_plain($keys))), 'error');
-        if (isset($results) && is_array($results) && count($results) > 0) {
-          drupal_add_css(drupal_get_path('module', 'search') .'/search.css', 'module', 'all', FALSE);
-          // EVIL HAXX!
-            $oldgetq = $_GET['q'];
-            $olddestination = $_REQUEST['destination'];
-            unset($_REQUEST['destination']);
-            $_GET['q'] = "search/$type_search/$keys";
-            $results = theme('search_results', $results, 'node');
-            $_GET['q'] = $oldgetq;
-            $_REQUEST['destination'] = $olddestination;
-          // END OF EVIL HAXX!
+      if (module_exists('google') && user_access('search Google CSE') && variable_get('search404_do_google_cse', false)) {
+        drupal_set_message(t('The page you requested does not exist. For your convenience, a google search was performed using the query %keys.', array('%keys' => check_plain($keys))), 'error');
+        drupal_goto ('search/google/'. $keys);
+      } else {
+        $results = module_invoke($type_search, 'search', 'search', $keys);
+        if (isset($results) && is_array($results) && count($results) == 1 && variable_get('search404_jump', false)) {
+          // First, check to see if there is exactly 1 result
+          drupal_set_message(t('The page you requested does not exist. A search for %keys resulted in this page.', array('%keys' => check_plain($keys))), 'status');
+          // overwrite $_REQUEST['destination'] because it is set by drupal_not_found()
+          $_REQUEST['destination'] = 'node/'. $results[0]['node']->nid;
+          drupal_goto();
+        }
+        elseif (isset($results) && is_array($results) && count($results) > 1 && variable_get('search404_first', false)) {
+          drupal_set_message(t('The page you requested does not exist. A search for %keys resulted in this page.', array('%keys' => check_plain($keys))), 'status');
+          // overwrite $_REQUEST['destination'] because it is set by drupal_not_found()
+          $_REQUEST['destination'] = 'node/'. $results[0]['node']->nid;
+          drupal_goto();
         }
         else {
-          $results = search_help('search#noresults', drupal_help_arg());
+          drupal_set_message(t('The page you requested does not exist. For your convenience, a search was performed using the query %keys.', array('%keys' => check_plain($keys))), 'error');
+          if (isset($results) && is_array($results) && count($results) > 0) {
+            drupal_add_css(drupal_get_path('module', 'search') .'/search.css', 'module', 'all', FALSE);
+            // EVIL HAXX!
+              $oldgetq = $_GET['q'];
+              $olddestination = $_REQUEST['destination'];
+              unset($_REQUEST['destination']);
+              $_GET['q'] = "search/$type_search/$keys";
+              $results = theme('search_results', $results, 'node');
+              $_GET['q'] = $oldgetq;
+              $_REQUEST['destination'] = $olddestination;
+            // END OF EVIL HAXX!
+          }
+          else {
+            $results = search_help('search#noresults', drupal_help_arg());
+          }
+          $results = theme('box', t('Search results'), $results);
         }
-        $results = theme('box', t('Search results'), $results);
       }
     }
     // Construct the search form.
@@ -188,6 +193,15 @@ function search404_settings() {
     '#title' => t('Show left and right sidebars in page when a 404 search occurs'),
     '#default_value' => variable_get('search404_block_show', false),
   );
+  
+  $form['search404_do_google_cse'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('Do a Google CSE Search instead of a Drupal Search when a 404 Occurs'),
+    '#description' => t('Requires Google CSE and Google CSE Search Modules to be Enabled'),
+    '#attributes' => module_exists('google') ? array()  : array ('disabled' => 'disabled'),
+    '#default_value' => variable_get('search404_do_google_cse', false),
+  );
+  
   $form['advanced'] = array(
     '#type' => 'fieldset',
     '#title' => t('Advanced settings'),

@@ -120,7 +120,8 @@ function search404_page() {
       // TODO: watchdog?
       if (module_exists('google') && user_access('search Google CSE') && variable_get('search404_do_google_cse', FALSE)) {
         drupal_set_message(t('The page you requested does not exist. For your convenience, a google search was performed using the query %keys.', array('%keys' => check_plain($keys))), 'error');
-        drupal_goto('search/google/'. $keys);
+        $_REQUEST['destination'] = 'search/google/'. $keys;
+        drupal_goto();
       }
       else {
         $results = module_invoke($type_search, 'search', 'search', $keys);

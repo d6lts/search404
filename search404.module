@@ -126,7 +126,12 @@ function search404_page() {
       // TODO: watchdog?
       if (module_exists('search_by_page') && variable_get('search404_do_search_by_page', FALSE)) {
         drupal_set_message(t('The page you requested does not exist. For your convenience, a search was performed using the query %keys.', array('%keys' => check_plain($keys))), 'error');
-        drupal_goto('search_pages/'. $keys);
+        if (variable_get('search404_redirect_301', false)) {
+          drupal_goto ('search_pages/'. $keys , NULL ,NULL , 301);
+        }
+        else {
+          drupal_goto('search_pages/'. $keys);
+        }
         // EVIL HAXX!
         $oldgetq = $_GET['q'];
         $olddestination = $_REQUEST['destination'];
@@ -140,7 +145,12 @@ function search404_page() {
       elseif (module_exists('google') && user_access('search Google CSE') && variable_get('search404_do_google_cse', FALSE)) {
         drupal_set_message(t('The page you requested does not exist. For your convenience, a google search was performed using the query %keys.', array('%keys' => check_plain($keys))), 'error');
         $_REQUEST['destination'] = 'search/google/'. $keys;
-        drupal_goto();
+        if (variable_get('search404_redirect_301', false)) {
+          drupal_goto ("" , NULL ,NULL , 301);
+        }
+        else {
+          drupal_goto();
+        }
       }
       else {
         $results = module_invoke($type_search, 'search', 'search', $keys);
@@ -149,13 +159,23 @@ function search404_page() {
           drupal_set_message(t('The page you requested does not exist. A search for %keys resulted in this page.', array('%keys' => check_plain($keys))), 'status');
           // overwrite $_REQUEST['destination'] because it is set by drupal_not_found()
           $_REQUEST['destination'] = 'node/'. $results[0]['node']->nid;
-          drupal_goto();
+          if (variable_get('search404_redirect_301', false)) {
+            drupal_goto ("" , NULL ,NULL , 301);
+          }
+          else {
+            drupal_goto();
+          }
         }
         elseif (isset($results) && is_array($results) && count($results) > 1 && variable_get('search404_first', FALSE)) {
           drupal_set_message(t('The page you requested does not exist. A search for %keys resulted in this page.', array('%keys' => check_plain($keys))), 'status');
           // overwrite $_REQUEST['destination'] because it is set by drupal_not_found()
           $_REQUEST['destination'] = 'node/'. $results[0]['node']->nid;
-          drupal_goto();
+          if (variable_get('search404_redirect_301', false)) {
+            drupal_goto ("" , NULL ,NULL , 301);
+          }
+          else {
+            drupal_goto();
+          }
         }
         else {
           drupal_set_message(t('The page you requested does not exist. For your convenience, a search was performed using the query %keys.', array('%keys' => check_plain($keys))), 'error');
@@ -235,6 +255,13 @@ function search404_settings() {
     '#description' => t('Requires "Search by page" module to be Enabled'),
     '#attributes' => module_exists('search_by_page') ? array()  : array('disabled' => 'disabled'),
     '#default_value' => variable_get('search404_do_search_by_page', FALSE),
+  );
+
+  //Added for having a 301 redirect instead of the standard 302 (offered by the drupal_goto)
+  $form['search404_redirect_301'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('Use a redirect 301 instead of redirect 302'),
+    '#default_value' => variable_get('search404_redirect_301', false),
   );
 
   $form['advanced'] = array(

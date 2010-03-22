@@ -105,7 +105,7 @@ function search404_search_engine_query() {
  * Beware of messy code
  */
 function search404_page() {
-  drupal_set_title(t('Page not found'));
+  drupal_set_title(t(variable_get('search404_page_title', '')));
   if (module_exists('search') && (user_access('search content') || user_access('search by page'))) {
     $keys = "";
     // if apachesolr_search or luceneapi is installed use them instead default node search
@@ -173,7 +173,7 @@ function search404_page() {
       }
     }
     // Construct the search form.
-    $output = drupal_get_form('search_form', NULL, $keys, $type_search) . $results;
+    $output = variable_get('search404_page_text', '') . drupal_get_form('search_form', NULL, $keys, $type_search) . $results;
   }
 
   /*
@@ -273,5 +273,20 @@ function search404_settings() {
     '#description' => t('This regular expression will be applied to filter all queries. The parts of the path that match the expression will be EXCLUDED from the search. You do NOT have to enclose the regex in forward slashes when defining the PCRE. e.g.: use "[foo]bar" instead of "/[foo]bar/". On how to use a PCRE Regex please refer <a href="http://php.net/pcre">PCRE pages in the PHP Manual</a>.'),
     '#default_value' => variable_get('search404_regex', ''),
   );
+
+  $form['advanced']['search404_page_title'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Custom Page Title'),
+    '#description' => t('You can enter a value that will displayed at the title of the Webpage e.g. "Page not found"'),
+    '#default_value' => variable_get('search404_page_title', 'Page not found'),
+  );
+
+  $form['advanced']['search404_page_text'] = array(
+    '#type' => 'textarea',
+    '#title' => t('Custom Page Text'),
+    '#default_value' => variable_get('search404_page_text', ''),
+    '#description' => t('You can enter a custom text message that can be displayed at the top of the search results, HTML formatting can be used'),
+  );
+
   return system_settings_form($form);
 }

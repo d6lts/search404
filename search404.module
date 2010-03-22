@@ -108,8 +108,8 @@ function search404_page() {
   drupal_set_title(t('Page not found'));
   if (module_exists('search') && user_access('search content')) {
     $keys = "";
-    // if apachesolr_search is installed use apachesolr_search instead default node search
-    $type_search = (module_exists('apachesolr_search')) ? 'apachesolr_search' : 'node';
+    // if apachesolr_search or luceneapi is installed use them instead default node search
+    $type_search = (module_exists('apachesolr_search')) ? 'apachesolr_search' : ((module_exists('luceneapi_node')) ? 'luceneapi_node' : 'node');
     if (variable_get('search404_use_search_engine', FALSE)) {
       $keys = search404_search_engine_query();
     }

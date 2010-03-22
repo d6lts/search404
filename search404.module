@@ -38,6 +38,8 @@ function search404_menu() {
  * data. Return must be sanatized before use.
  */
 function search404_get_keys() {
+  global $language;
+
   // Abort query on certain extensions, e.g: gif jpg jpeg png
   $extensions = preg_split('/\s+/', variable_get('search404_ignore_query', 'gif jpg jpeg bmp png'));
   $extensions = trim(implode('|', $extensions));
@@ -45,6 +47,10 @@ function search404_get_keys() {
     return FALSE;
   }
   $keys = $_REQUEST['destination'] ? $_REQUEST['destination'] : $_REQUEST['q'];
+  //Remove the Language Prefix Appended to Search String (http://drupal.org/node/560426)
+  if (LANGUAGE_NEGOTIATION_PATH_DEFAULT && $language->language) {
+    $keys = preg_replace("/^".$language->language."\//", '', $keys);
+  }
   $regex_filter = variable_get('search404_regex', '');
   $keys_array[] = $keys;
   if (!empty($regex_filter)) {

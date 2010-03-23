@@ -28,6 +28,7 @@ function search404_menu() {
     'access arguments' => array('administer site configuration'),
     'type' => MENU_NORMAL_ITEM,
   );
+
   return $items;
 }
 
@@ -319,6 +320,12 @@ function search404_settings() {
     '#title' => t('Custom Page Text'),
     '#default_value' => variable_get('search404_page_text', ''),
     '#description' => t('You can enter a custom text message that can be displayed at the top of the search results, HTML formatting can be used'),
+  );
+
+  //Helps reset the site404 variable to search404 in case the user changes it manually
+  $form['advanced']['search404_variable'] = array(
+    '#type' => 'hidden',
+    '#value' => variable_set('site_404', 'search404'),
   );
 
   return system_settings_form($form);

@@ -146,12 +146,7 @@ function search404_page() {
       elseif (module_exists('google') && user_access('search Google CSE') && variable_get('search404_do_google_cse', FALSE)) {
         drupal_set_message(t('The page you requested does not exist. For your convenience, a google search was performed using the query %keys.', array('%keys' => check_plain($keys))), 'error');
         $_REQUEST['destination'] = 'search/google/'. $keys;
-        if (variable_get('search404_redirect_301', false)) {
-          drupal_goto ("" , NULL ,NULL , 301);
-        }
-        else {
-          drupal_goto();
-        }
+        search404_goto();
       }
       else {
         $results = module_invoke($type_search, 'search', 'search', $keys);
@@ -160,23 +155,13 @@ function search404_page() {
           drupal_set_message(t('The page you requested does not exist. A search for %keys resulted in this page.', array('%keys' => check_plain($keys))), 'status');
           // overwrite $_REQUEST['destination'] because it is set by drupal_not_found()
           $_REQUEST['destination'] = 'node/'. $results[0]['node']->nid;
-          if (variable_get('search404_redirect_301', false)) {
-            drupal_goto ("" , NULL ,NULL , 301);
-          }
-          else {
-            drupal_goto();
-          }
+          search404_goto();
         }
         elseif (isset($results) && is_array($results) && count($results) > 1 && variable_get('search404_first', FALSE)) {
           drupal_set_message(t('The page you requested does not exist. A search for %keys resulted in this page.', array('%keys' => check_plain($keys))), 'status');
           // overwrite $_REQUEST['destination'] because it is set by drupal_not_found()
           $_REQUEST['destination'] = 'node/'. $results[0]['node']->nid;
-          if (variable_get('search404_redirect_301', false)) {
-            drupal_goto ("" , NULL ,NULL , 301);
-          }
-          else {
-            drupal_goto();
-          }
+          search404_goto();
         }
         else {
           drupal_set_message(t('The page you requested does not exist. For your convenience, a search was performed using the query %keys.', array('%keys' => check_plain($keys))), 'error');
@@ -219,6 +204,18 @@ function search404_page() {
   }
   // End of EVIL HAXX 2
 
+}
+
+/**
+ * Implement own goto helper function
+ */
+function search404_goto() {
+  if (variable_get('search404_redirect_301', FALSE)) {
+    drupal_goto ('', NULL, NULL, 301);
+  }
+  else {
+    drupal_goto();
+  }
 }
 
 /**

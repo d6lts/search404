@@ -50,7 +50,7 @@ function search404_get_keys() {
   $keys = $_REQUEST['destination'] ? $_REQUEST['destination'] : $_REQUEST['q'];
   //Remove the Language Prefix Appended to Search String (http://drupal.org/node/560426)
   if (LANGUAGE_NEGOTIATION_PATH_DEFAULT && $language->language) {
-    $keys = preg_replace("/^".$language->language."\//", '', $keys);
+    $keys = preg_replace("/^". $language->language ."\//", '', $keys);
   }
   $regex_filter = variable_get('search404_regex', '');
   $keys_array[] = $keys;
@@ -127,8 +127,8 @@ function search404_page() {
       // TODO: watchdog?
       if (module_exists('search_by_page') && variable_get('search404_do_search_by_page', FALSE)) {
         drupal_set_message(t('The page you requested does not exist. For your convenience, a search was performed using the query %keys.', array('%keys' => check_plain($keys))), 'error');
-        if (variable_get('search404_redirect_301', false)) {
-          drupal_goto ('search_pages/'. $keys , NULL ,NULL , 301);
+        if (variable_get('search404_redirect_301', FALSE)) {
+          drupal_goto('search_pages/'. $keys, NULL, NULL, 301);
         }
         else {
           drupal_goto('search_pages/'. $keys);
@@ -211,7 +211,7 @@ function search404_page() {
  */
 function search404_goto() {
   if (variable_get('search404_redirect_301', FALSE)) {
-    drupal_goto ('', NULL, NULL, 301);
+    drupal_goto('', NULL, NULL, 301);
   }
   else {
     drupal_goto();
@@ -259,7 +259,7 @@ function search404_settings() {
   $form['search404_redirect_301'] = array(
     '#type' => 'checkbox',
     '#title' => t('Use a redirect 301 instead of redirect 302'),
-    '#default_value' => variable_get('search404_redirect_301', false),
+    '#default_value' => variable_get('search404_redirect_301', FALSE),
   );
 
   $form['advanced'] = array(

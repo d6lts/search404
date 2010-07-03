@@ -127,12 +127,7 @@ function search404_page() {
       // TODO: watchdog?
       if (module_exists('search_by_page') && variable_get('search404_do_search_by_page', FALSE)) {
         drupal_set_message(t('The page you requested does not exist. For your convenience, a search was performed using the query %keys.', array('%keys' => check_plain($keys))), 'error');
-        if (variable_get('search404_redirect_301', FALSE)) {
-          drupal_goto('search_pages/'. $keys, NULL, NULL, 301);
-        }
-        else {
-          drupal_goto('search_pages/'. $keys);
-        }
+        search404_goto('search_pages/'. $keys);
         // EVIL HAXX!
         $oldgetq = $_GET['q'];
         $olddestination = $_REQUEST['destination'];
@@ -209,12 +204,13 @@ function search404_page() {
 /**
  * Implement own goto helper function
  */
-function search404_goto() {
+function search404_goto($path = '') {
+    
   if (variable_get('search404_redirect_301', FALSE)) {
-    drupal_goto('', NULL, NULL, 301);
+    drupal_goto($path, NULL, NULL, 301);
   }
   else {
-    drupal_goto();
+    drupal_goto($path);
   }
 }
 

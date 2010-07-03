@@ -66,8 +66,8 @@ function search404_get_keys() {
 
   $keys = preg_split('/['. PREG_CLASS_SEARCH_EXCLUDE .']+/u', $keys);
 
-  // Ignore certain words
-  $keys = array_diff($keys, explode(' ', variable_get('search404_ignore', 'and or the')));
+  // Ignore certain words (use case insensitive search).
+  $keys = array_udiff($keys, explode(' ', variable_get('search404_ignore', 'and or the')), 'strcasecmp');
   //Sanitize the keys
   foreach ($keys as $a => $b) {
     $keys[$a] = check_plain($b);

@@ -125,30 +125,24 @@ function search404_page() {
       $keys = search404_get_keys();
     }
     if ($keys) {
-      // TODO: watchdog?
       if (module_exists('search_by_page') && variable_get('search404_do_search_by_page', FALSE)) {
         drupal_set_message(t('The page you requested does not exist. For your convenience, a search was performed using the query %keys.', array('%keys' => check_plain($keys))), 'error');
         search404_goto('search_pages/'. $keys);
       }
       elseif (module_exists('google') && user_access('search Google CSE') && variable_get('search404_do_google_cse', FALSE)) {
         drupal_set_message(t('The page you requested does not exist. For your convenience, a google search was performed using the query %keys.', array('%keys' => check_plain($keys))), 'error');
-        $_REQUEST['destination'] = 'search/google/'. $keys;
-        search404_goto();
+        search404_goto('search/google/'. $keys);
       }
       else {
         $results = module_invoke($type_search, 'search', 'search', $keys);
         if (isset($results) && is_array($results) && count($results) == 1 && variable_get('search404_jump', FALSE)) {
           // First, check to see if there is exactly 1 result.
           drupal_set_message(t('The page you requested does not exist. A search for %keys resulted in this page.', array('%keys' => check_plain($keys))), 'status');
-          // Overwrite $_REQUEST['destination'] because it is set by drupal_not_found().
-          $_REQUEST['destination'] = 'node/'. $results[0]['node']->nid;
-          search404_goto();
+          search404_goto('node/'. $results[0]['node']->nid);
         }
         elseif (isset($results) && is_array($results) && count($results) > 1 && variable_get('search404_first', FALSE)) {
           drupal_set_message(t('The page you requested does not exist. A search for %keys resulted in this page.', array('%keys' => check_plain($keys))), 'status');
-          // Overwrite $_REQUEST['destination'] because it is set by drupal_not_found().
-          $_REQUEST['destination'] = 'node/'. $results[0]['node']->nid;
-          search404_goto();
+          search404_goto('node/'. $results[0]['node']->nid);
         }
         else {
           drupal_set_message(t('The page you requested does not exist. For your convenience, a search was performed using the query %keys.', array('%keys' => check_plain($keys))), 'error');
@@ -194,9 +188,12 @@ function search404_page() {
 }
 
 /**
- * Own goto helper function.
+ * Search404 drupal_goto helper function.
  */
 function search404_goto($path = '') {
+  // Overwrite $_REQUEST['destination'] because it is set by drupal_not_found().
+  $_REQUEST['destination'] = $path;
+  // Set 301 redirect if so specified in settings else do default 302 redirect.
   if (variable_get('search404_redirect_301', FALSE)) {
     drupal_goto($path, NULL, NULL, 301);
   }

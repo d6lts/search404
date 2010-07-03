@@ -42,7 +42,7 @@ function search404_get_keys() {
   global $language;
 
   // Abort query on certain extensions, e.g: gif jpg jpeg png
-  $extensions = preg_split('/\s+/', variable_get('search404_ignore_query', 'gif jpg jpeg bmp png'));
+  $extensions = explode(' ', variable_get('search404_ignore_query', 'gif jpg jpeg bmp png'));
   $extensions = trim(implode('|', $extensions));
   if (!empty($extensions) && preg_match("/\.($extensions)$/", $_REQUEST['destination'])) {
     return FALSE;
@@ -57,8 +57,8 @@ function search404_get_keys() {
   if (!empty($regex_filter)) {
     $keys = preg_replace("/". $regex_filter ."/", '', $keys);
   }
-  // Ingore certain extensions from query
-  $extensions = preg_split('/\s+/', variable_get('search404_ignore_extensions', 'htm html php'));
+  // Ignore certain extensions from query
+  $extensions = explode(' ', variable_get('search404_ignore_extensions', 'htm html php'));
   $extensions = trim(implode('|', $extensions));
   if (!empty($extensions)) {
     $keys = preg_replace("/\.($extensions)$/", '', $keys);

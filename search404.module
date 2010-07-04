@@ -314,9 +314,16 @@ function search404_settings() {
   );
 
   // Helps reset the site404 variable to search404 in case the user changes it manually.
-  $form['advanced']['search404_variable'] = array(
+  $form['site_404'] = array(
     '#type' => 'hidden',
-    '#value' => variable_set('site_404', 'search404'),
+    '#value' => 'search404',
+  );
+  // Tell the user about the site_404 issue.
+  $form['search404_variable_message'] = array(
+    '#type' => 'markup',
+    '#prefix' => '<p>',
+    '#suffix' => '</p>',
+    '#value' => t('Saving this form will revert the 404 handling on the site to this module.'),
   );
 
   return system_settings_form($form);

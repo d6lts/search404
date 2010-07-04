@@ -124,8 +124,10 @@ function search404_page() {
     if (!$keys) {
       $keys = search404_get_keys();
     }
-    // If search keys are present and automatic searching is not disabled.
-    if ($keys && !variable_get('search404_skip_auto_search', FALSE)) {
+    // Get throttle status
+    $throttle = module_invoke('throttle', 'status');
+    // If search keys are present and site is not throttled and automatic searching is not disabled.
+    if ($keys && !$throttle && !variable_get('search404_skip_auto_search', FALSE)) {
       if (module_exists('search_by_page') && variable_get('search404_do_search_by_page', FALSE)) {
         drupal_set_message(t('The page you requested does not exist. For your convenience, a search was performed using the query %keys.', array('%keys' => check_plain($keys))), 'error');
         search404_goto('search_pages/'. $keys);

@@ -313,7 +313,7 @@ function search404_settings() {
     '#description' => t('You can enter a custom text message that can be displayed at the top of the search results, HTML formatting can be used'),
   );
 
-  // Helps reset the site404 variable to search404 in case the user changes it manually.
+  // Helps reset the site_404 variable to search404 in case the user changes it manually.
   $form['site_404'] = array(
     '#type' => 'hidden',
     '#value' => 'search404',

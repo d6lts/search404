@@ -34,9 +34,9 @@ function search404_menu() {
 
 /**
  * Replacement for search_get_keys
- * WARNING: This function can potentially return dangerous
- *              potential SQL inject/XSS
- * data. Return must be sanatized before use.
+ * This function can potentially return dangerous
+ * potential SQL inject/XSS data. 
+ * Return must be sanatized before use.
  */
 function search404_get_keys() {
   global $language;
@@ -110,7 +110,6 @@ function search404_search_engine_query() {
  * Main search function.
  * Started with: http://drupal.org/node/12668
  * Updated to be more similar to search_view
- * Beware of messy code.
  */
 function search404_page() {
   drupal_set_title(t(variable_get('search404_page_title', '')));

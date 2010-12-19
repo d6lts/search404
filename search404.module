@@ -115,6 +115,7 @@ function search404_page() {
   drupal_set_title(t(variable_get('search404_page_title', 'Page not found')));
   if (module_exists('search') && (user_access('search content') || user_access('search by page'))) {
     $keys = "";
+    $results = "";
     // If apachesolr_search or luceneapi is installed use them instead default node search.
     $type_search = (module_exists('apachesolr_search')) ? 'apachesolr_search' : ((module_exists('luceneapi_node')) ? 'luceneapi_node' : 'node');
     if (variable_get('search404_use_search_engine', FALSE)) {

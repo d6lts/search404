@@ -162,7 +162,14 @@ function search404_page() {
             // END OF EVIL HAXX!
           }
           else {
-            $results = search_help('search#noresults', drupal_help_arg());
+            // If we are searching with apache solr, use the no results text 
+            // from the apachesolr_search module (#1127412).
+            if (module_exists('apachesolr_search')) {
+              $results = apachesolr_search_noresults();
+            }
+            else {
+              $results = search_help('search#noresults', drupal_help_arg());
+            }
           }
           $results = theme('box', t('Search results'), $results);
         }

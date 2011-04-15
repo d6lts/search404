@@ -145,7 +145,7 @@ function search404_page() {
           drupal_set_message(t('The page you requested does not exist. A search for %keys resulted in this page.', array('%keys' => check_plain($keys))), 'status');
           search404_goto('node/'. $results[0]['node']->nid);
         }
-        elseif (isset($results) && is_array($results) && count($results) > 1 && variable_get('search404_first', FALSE)) {
+        elseif (isset($results) && is_array($results) && count($results) >= 1 && variable_get('search404_first', FALSE)) {
           drupal_set_message(t('The page you requested does not exist. A search for %keys resulted in this page.', array('%keys' => check_plain($keys))), 'status');
           search404_goto('node/'. $results[0]['node']->nid);
         }
@@ -337,3 +337,4 @@ function search404_settings() {
 
   return system_settings_form($form);
 }
+

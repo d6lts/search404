@@ -144,6 +144,7 @@ function search404_page() {
         search404_goto('search/google/'. $keys);
       }
       else {
+        // Called for apache solr, lucene and core search.
         $results = module_invoke($type_search, 'search', 'search', $keys);
         // First, check to see if there is exactly 1 result.
         if (isset($results) && is_array($results) && count($results) == 1 && variable_get('search404_jump', FALSE)) {

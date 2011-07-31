@@ -12,14 +12,14 @@ function search404_menu() {
   $items = array();
 
   $items['search404'] = array(
-    'title' => t('Page not found'),
+    'title' => 'Page not found',
     'access callback' => TRUE,
     'page callback' => 'search404_page',
     'type' => MENU_LOCAL_TASK
   );
 
   $items['admin/settings/search404'] = array(
-    'title' => t('Search 404 settings'),
+    'title' => 'Search 404 settings',
     'description' => t('Administer search 404.'),
     'page callback' => 'drupal_get_form',
     'page arguments' => array('search404_settings'),
@@ -67,7 +67,7 @@ function search404_get_keys() {
   $keys = preg_split('/['. PREG_CLASS_SEARCH_EXCLUDE .']+/u', $keys);
 
   // Ignore certain words (use case insensitive search).
-  $keys = array_udiff($keys, explode(' ', variable_get('search404_ignore', 'and or the')), 'strcasecmp');
+  $keys = array_udiff($keys, explode(' ', variable_get('search404_ignore', t('and or the'))), 'strcasecmp');
   //Sanitize the keys
   foreach ($keys as $a => $b) {
     $keys[$a] = check_plain($b);
@@ -114,7 +114,7 @@ function search404_search_engine_query() {
  */
 function search404_page() {
   $output = '';
-  drupal_set_title(t(variable_get('search404_page_title', 'Page not found')));
+  drupal_set_title(t(variable_get('search404_page_title', t('Page not found'))));
   if (module_exists('search') && (user_access('search content') || user_access('search by page'))) {
     $keys = "";
     $results = "";
@@ -287,7 +287,7 @@ function search404_settings() {
     '#type' => 'textarea',
     '#title' => t('Words to ignore'),
     '#description' => t('These words will be ignored from the search query. Separate words with a space, e.g.: "and or the".'),
-    '#default_value' => variable_get('search404_ignore', 'and or the'),
+    '#default_value' => variable_get('search404_ignore', t('and or the')),
   );
   $form['advanced']['search404_ignore_extensions'] = array(
     '#type' => 'textfield',
@@ -312,7 +312,7 @@ function search404_settings() {
     '#type' => 'textfield',
     '#title' => t('Custom Page Title'),
     '#description' => t('You can enter a value that will displayed at the title of the Webpage e.g. "Page not found"'),
-    '#default_value' => variable_get('search404_page_title', 'Page not found'),
+    '#default_value' => variable_get('search404_page_title', t('Page not found')),
   );
 
   $form['advanced']['search404_page_text'] = array(

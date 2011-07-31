@@ -138,6 +138,12 @@ function search404_page() {
         }  
         search404_goto('search_pages/'. $keys);
       }
+      elseif (module_exists('fuzzysearch') && user_access('fuzzysearch content') && variable_get('search404_do_fuzzysearch', FALSE)) {
+        if (!variable_get('search404_disable_error_message', FALSE)) {
+          drupal_set_message(t('The page you requested does not exist. For your convenience, a search was performed using the query %keys.', array('%keys' => check_plain($keys))), 'error');
+        }
+        search404_goto(variable_get('fuzzysearch_path_name', 'fuzzysearch/results') .'/'. $keys);
+      }
       elseif (module_exists('google') && user_access('search Google CSE') && variable_get('search404_do_google_cse', FALSE)) {
         if (!variable_get('search404_disable_error_message', FALSE)) {
           drupal_set_message(t('The page you requested does not exist. For your convenience, a google search was performed using the query %keys.', array('%keys' => check_plain($keys))), 'error');
@@ -195,12 +201,19 @@ function search404_page() {
         }
       }
     }
-    // If Lucent DYM is present then add Lucene "Did You Mean" to results
+    $search_suggestions = '';
+    // If Lucent DYM is present then add Lucene "Did You Mean" suggestions
     if (module_exists('luceneapi_dym') && $suggestions = luceneapi_dym_suggestions_get($keys)) {
-      $results = theme('box', t('Did you mean'), $suggestions) . $results;
+      $search_suggestions = theme('box', t('Did you mean'), $suggestions);
     }
     // Construct the search form.
-    $output = variable_get('search404_page_text', '') . drupal_get_form('search_form', NULL, $keys, $type_search) . $results;
+    if (module_exists('fuzzysearch') && variable_get('search404_do_fuzzysearch', FALSE)) {
+      $search_form = drupal_get_form('fuzzysearch_form', $keys);
+    }
+    else {
+      $search_form = drupal_get_form('search_form', NULL, $keys, $type_search);
+    }
+    $output = variable_get('search404_page_text', '') . $search_form . $search_suggestions . $results;
   }
 
   // This was done to display sidebars left and right of page, 
@@ -268,6 +281,14 @@ function search404_settings() {
     '#description' => t('Requires "Search by page" module to be Enabled'),
     '#attributes' => module_exists('search_by_page') ? array()  : array('disabled' => 'disabled'),
     '#default_value' => variable_get('search404_do_search_by_page', FALSE),
+  );
+
+  $form['search404_do_fuzzysearch'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('Do a "Fuzzy Search" Search instead of a Drupal Search when a 404 Occurs'),
+    '#description' => t('Requires "Fuzzy Search" module to be enabled. If using both core search and Fuzzy Search, do not use "search" as your fuzzysearch results path.'),
+    '#attributes' => module_exists('fuzzysearch') ? array()  : array('disabled' => 'disabled'),
+    '#default_value' => variable_get('search404_do_fuzzysearch', FALSE),
   );
 
   // Added for having a 301 redirect instead of the standard 302 (offered by the drupal_goto).

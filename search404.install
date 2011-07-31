@@ -33,4 +33,5 @@ function search404_uninstall() {
   variable_del('search404_use_or');
   variable_del('search404_use_search_engine');
   variable_del('search404_disable_error_message');
+  variable_del('search404_do_fuzzysearch');
 }

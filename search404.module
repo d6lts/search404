@@ -153,7 +153,7 @@ function search404_page() {
           drupal_set_message(t('The page you requested does not exist. For your convenience, a search was performed using the query %keys.', array('%keys' => check_plain($keys))), 'error');
           if (isset($results) && is_array($results) && count($results) > 0) {
             drupal_add_css(drupal_get_path('module', 'search') .'/search.css', 'module', 'all', FALSE);
-            // EVIL HAXX!
+            // Hack to get search results themed by manipulating $_GET['q']!
               $oldgetq = $_GET['q'];
               $olddestination = $_REQUEST['destination'];
               unset($_REQUEST['destination']);
@@ -161,7 +161,7 @@ function search404_page() {
               $results = theme('search_results', $results, 'node');
               $_GET['q'] = $oldgetq;
               $_REQUEST['destination'] = $olddestination;
-            // END OF EVIL HAXX!
+            // End of Hack
           }
           else {
             // If we are searching with apache solr, use the no results text 

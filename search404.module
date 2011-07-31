@@ -131,26 +131,37 @@ function search404_page() {
     // If search keys are present and site is not throttled and automatic searching is not disabled.
     if ($keys && !$throttle && !variable_get('search404_skip_auto_search', FALSE)) {
       if (module_exists('search_by_page') && variable_get('search404_do_search_by_page', FALSE)) {
-        drupal_set_message(t('The page you requested does not exist. For your convenience, a search was performed using the query %keys.', array('%keys' => check_plain($keys))), 'error');
+        // TODO - Perhaps move the message to the search404 goto?
+        if (!variable_get('search404_disable_error_message', FALSE)) {
+          drupal_set_message(t('The page you requested does not exist. For your convenience, a search was performed using the query %keys.', array('%keys' => check_plain($keys))), 'error');
+        }  
         search404_goto('search_pages/'. $keys);
       }
       elseif (module_exists('google') && user_access('search Google CSE') && variable_get('search404_do_google_cse', FALSE)) {
-        drupal_set_message(t('The page you requested does not exist. For your convenience, a google search was performed using the query %keys.', array('%keys' => check_plain($keys))), 'error');
+        if (!variable_get('search404_disable_error_message', FALSE)) {
+          drupal_set_message(t('The page you requested does not exist. For your convenience, a google search was performed using the query %keys.', array('%keys' => check_plain($keys))), 'error');
+        }
         search404_goto('search/google/'. $keys);
       }
       else {
         $results = module_invoke($type_search, 'search', 'search', $keys);
+        // First, check to see if there is exactly 1 result.
         if (isset($results) && is_array($results) && count($results) == 1 && variable_get('search404_jump', FALSE)) {
-          // First, check to see if there is exactly 1 result.
-          drupal_set_message(t('The page you requested does not exist. A search for %keys resulted in this page.', array('%keys' => check_plain($keys))), 'status');
+          if (!variable_get('search404_disable_error_message', FALSE)) {
+            drupal_set_message(t('The page you requested does not exist. A search for %keys resulted in this page.', array('%keys' => check_plain($keys))), 'status');
+          }  
           search404_goto('node/'. $results[0]['node']->nid);
         }
         elseif (isset($results) && is_array($results) && count($results) >= 1 && variable_get('search404_first', FALSE)) {
-          drupal_set_message(t('The page you requested does not exist. A search for %keys resulted in this page.', array('%keys' => check_plain($keys))), 'status');
+          if (!variable_get('search404_disable_error_message', FALSE)) {
+            drupal_set_message(t('The page you requested does not exist. A search for %keys resulted in this page.', array('%keys' => check_plain($keys))), 'status');
+          }  
           search404_goto('node/'. $results[0]['node']->nid);
         }
         else {
-          drupal_set_message(t('The page you requested does not exist. For your convenience, a search was performed using the query %keys.', array('%keys' => check_plain($keys))), 'error');
+          if (!variable_get('search404_disable_error_message', FALSE)) {
+            drupal_set_message(t('The page you requested does not exist. For your convenience, a search was performed using the query %keys.', array('%keys' => check_plain($keys))), 'error');
+          }  
           if (isset($results) && is_array($results) && count($results) > 0) {
             drupal_add_css(drupal_get_path('module', 'search') .'/search.css', 'module', 'all', FALSE);
             // Hack to get search results themed by manipulating $_GET['q']!
@@ -181,11 +192,10 @@ function search404_page() {
     $output = variable_get('search404_page_text', '') . drupal_get_form('search_form', NULL, $keys, $type_search) . $results;
   }
 
-  /*
-   * Start EVIL HAXX 2
-   * This was done to display sidebars left and right of page, if the option is set from Search404
-   * Settings Page.
-   */
+  // This was done to display sidebars left and right of page, 
+  // if the option is set from Search404 settings Page.
+  // However this will cause the program flow to not return 
+  // to the drupal_not_found() and back to index.php.
   if (variable_get('search404_block_show', FALSE)) {
     print theme('page', $output);
     drupal_page_footer();
@@ -195,8 +205,6 @@ function search404_page() {
   else {
     return $output;
   }
-  // End of EVIL HAXX 2
-
 }
 
 /**
@@ -264,6 +272,14 @@ function search404_settings() {
     '#description' => t('Disable automatically searching for the keywords when a page is not found and instead show the populated search form with the keywords. Useful for large sites to reduce server loads.'),
     '#type' => 'checkbox',
     '#default_value' => variable_get('search404_skip_auto_search', FALSE),
+  );
+  
+  // Disable the drupal error message when showing search results.
+  $form['search404_disable_error_message'] = array(
+    '#title' => t('Disable error message'),
+    '#type' => 'checkbox',
+    '#description' => t('Disable the drupal error message when search results are shown on a 404 page.'),
+    '#default_value' => variable_get('search404_disable_error_message', FALSE),
   );
 
   $form['advanced'] = array(

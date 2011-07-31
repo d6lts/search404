@@ -34,7 +34,7 @@ function search404_menu() {
 /**
  * Replacement for search_get_keys
  * This function can potentially return dangerous
- * potential SQL inject/XSS data. 
+ * potential SQL inject/XSS data.
  * Return must be sanatized before use.
  */
 function search404_get_keys() {
@@ -89,7 +89,7 @@ function search404_search_engine_query() {
     'lycos' => 'query',
     'yahoo' => 'p',
   );
-  
+
   // Try to extract searchengine querystring only if HTTP_REFERER was set (#1111918)
   if (isset($_SERVER['HTTP_REFERER'])) {
     $parsed_url = parse_url($_SERVER['HTTP_REFERER']);
@@ -120,7 +120,7 @@ function search404_page() {
     $results = "";
     // If apachesolr_search or luceneapi or xapian is installed use them instead default node search.
     $type_search = (module_exists('apachesolr_search')) ? 'apachesolr_search' : ((module_exists('luceneapi_node')) ? 'luceneapi_node' : ((module_exists('xapian')) ? 'xapian' : 'node'));
-     
+
     if (variable_get('search404_use_search_engine', FALSE)) {
       $keys = search404_search_engine_query();
     }
@@ -135,7 +135,7 @@ function search404_page() {
         // TODO - Perhaps move the message to the search404 goto?
         if (!variable_get('search404_disable_error_message', FALSE)) {
           drupal_set_message(t('The page you requested does not exist. For your convenience, a search was performed using the query %keys.', array('%keys' => check_plain($keys))), 'error');
-        }  
+        }
         search404_goto('search_pages/'. $keys);
       }
       elseif (module_exists('fuzzysearch') && user_access('fuzzysearch content') && variable_get('search404_do_fuzzysearch', FALSE)) {
@@ -157,19 +157,19 @@ function search404_page() {
         if (isset($results) && is_array($results) && count($results) == 1 && variable_get('search404_jump', FALSE)) {
           if (!variable_get('search404_disable_error_message', FALSE)) {
             drupal_set_message(t('The page you requested does not exist. A search for %keys resulted in this page.', array('%keys' => check_plain($keys))), 'status');
-          }  
+          }
           search404_goto('node/'. $results[0]['node']->nid);
         }
         elseif (isset($results) && is_array($results) && count($results) >= 1 && variable_get('search404_first', FALSE)) {
           if (!variable_get('search404_disable_error_message', FALSE)) {
             drupal_set_message(t('The page you requested does not exist. A search for %keys resulted in this page.', array('%keys' => check_plain($keys))), 'status');
-          }  
+          }
           search404_goto('node/'. $results[0]['node']->nid);
         }
         else {
           if (!variable_get('search404_disable_error_message', FALSE)) {
             drupal_set_message(t('The page you requested does not exist. For your convenience, a search was performed using the query %keys.', array('%keys' => check_plain($keys))), 'error');
-          }  
+          }
           if (isset($results) && is_array($results) && count($results) > 0) {
             drupal_add_css(drupal_get_path('module', 'search') .'/search.css', 'module', 'all', FALSE);
             // Hack to get search results themed by manipulating $_GET['q']!
@@ -188,7 +188,7 @@ function search404_page() {
               $lucene_dym_path = preg_replace('/^.*href="\/search\/luceneapi_node\/([^"]*)".*$/i', '$1', $suggestions);
               search404_goto($lucene_dym_path);
             }
-            // If we are searching with apache solr, use the no results text 
+            // If we are searching with apache solr, use the no results text
             // from the apachesolr_search module (#1127412).
             if (module_exists('apachesolr_search')) {
               $results = apachesolr_search_noresults();
@@ -216,9 +216,9 @@ function search404_page() {
     $output = variable_get('search404_page_text', '') . $search_form . $search_suggestions . $results;
   }
 
-  // This was done to display sidebars left and right of page, 
+  // This was done to display sidebars left and right of page,
   // if the option is set from Search404 settings Page.
-  // However this will cause the program flow to not return 
+  // However this will cause the program flow to not return
   // to the drupal_not_found() and back to index.php.
   if (variable_get('search404_block_show', FALSE)) {
     print theme('page', $output);
@@ -253,11 +253,13 @@ function search404_settings() {
   $form['search404_jump'] = array(
     '#type' => 'checkbox',
     '#title' => t('Jump directly to the search result when there is only one result.'),
+    '#description' => t('Works only with Core, Apache, Lucene and Xapian searches.'),
     '#default_value' => variable_get('search404_jump', FALSE),
   );
   $form['search404_first'] = array(
     '#type' => 'checkbox',
-    '#title' => t('Jump directly to the first search result even when there are multiple results.'),
+    '#title' => t('Jump directly to the first search result even when there are multiple results. Works only with Core, Apache, Lucene and Xapian searches.'),
+    '#description' => t('Works only with Core, Apache, Lucene and Xapian searches.'),
     '#default_value' => variable_get('search404_first', FALSE),
   );
   // Added for displaying blocks for 404 searches.
@@ -266,7 +268,6 @@ function search404_settings() {
     '#title' => t('Show left and right sidebars in page when a 404 search occurs'),
     '#default_value' => variable_get('search404_block_show', FALSE),
   );
-
   $form['search404_do_google_cse'] = array(
     '#type' => 'checkbox',
     '#title' => t('Do a Google CSE Search instead of a Drupal Search when a 404 Occurs'),
@@ -274,7 +275,6 @@ function search404_settings() {
     '#attributes' => module_exists('google') ? array()  : array('disabled' => 'disabled'),
     '#default_value' => variable_get('search404_do_google_cse', FALSE),
   );
-
   $form['search404_do_search_by_page'] = array(
     '#type' => 'checkbox',
     '#title' => t('Do a "Search by page" Search instead of a Drupal Search when a 404 Occurs'),
@@ -282,7 +282,6 @@ function search404_settings() {
     '#attributes' => module_exists('search_by_page') ? array()  : array('disabled' => 'disabled'),
     '#default_value' => variable_get('search404_do_search_by_page', FALSE),
   );
-
   $form['search404_do_fuzzysearch'] = array(
     '#type' => 'checkbox',
     '#title' => t('Do a "Fuzzy Search" Search instead of a Drupal Search when a 404 Occurs'),
@@ -290,14 +289,12 @@ function search404_settings() {
     '#attributes' => module_exists('fuzzysearch') ? array()  : array('disabled' => 'disabled'),
     '#default_value' => variable_get('search404_do_fuzzysearch', FALSE),
   );
-
   // Added for having a 301 redirect instead of the standard 302 (offered by the drupal_goto).
   $form['search404_redirect_301'] = array(
     '#type' => 'checkbox',
     '#title' => t('Use a redirect 301 instead of redirect 302'),
     '#default_value' => variable_get('search404_redirect_301', FALSE),
   );
-
   // Added for preventing automatic search for large sites.
   $form['search404_skip_auto_search'] = array(
     '#title' => t('Disable auto search'),
@@ -305,7 +302,6 @@ function search404_settings() {
     '#type' => 'checkbox',
     '#default_value' => variable_get('search404_skip_auto_search', FALSE),
   );
-  
   // Disable the drupal error message when showing search results.
   $form['search404_disable_error_message'] = array(
     '#title' => t('Disable error message'),
@@ -355,21 +351,18 @@ function search404_settings() {
     '#description' => t('This regular expression will be applied to filter all queries. The parts of the path that match the expression will be EXCLUDED from the search. You do NOT have to enclose the regex in forward slashes when defining the PCRE. e.g.: use "[foo]bar" instead of "/[foo]bar/". On how to use a PCRE Regex please refer <a href="http://php.net/pcre">PCRE pages in the PHP Manual</a>.'),
     '#default_value' => variable_get('search404_regex', ''),
   );
-
   $form['advanced']['search404_page_title'] = array(
     '#type' => 'textfield',
     '#title' => t('Custom Page Title'),
     '#description' => t('You can enter a value that will displayed at the title of the Webpage e.g. "Page not found"'),
     '#default_value' => variable_get('search404_page_title', t('Page not found')),
   );
-
   $form['advanced']['search404_page_text'] = array(
     '#type' => 'textarea',
     '#title' => t('Custom Page Text'),
     '#default_value' => variable_get('search404_page_text', ''),
     '#description' => t('You can enter a custom text message that can be displayed at the top of the search results, HTML formatting can be used'),
   );
-
   // Helps reset the site_404 variable to search404 in case the user changes it manually.
   $form['site_404'] = array(
     '#type' => 'hidden',

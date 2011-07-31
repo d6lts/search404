@@ -145,7 +145,7 @@ function search404_page() {
         search404_goto('search/google/'. $keys);
       }
       else {
-        // Called for apache solr, lucene and core search.
+        // Called for apache solr, lucene, xapian and core search.
         $results = module_invoke($type_search, 'search', 'search', $keys);
         // First, check to see if there is exactly 1 result.
         if (isset($results) && is_array($results) && count($results) == 1 && variable_get('search404_jump', FALSE)) {
@@ -177,6 +177,11 @@ function search404_page() {
             // End of Hack
           }
           else {
+            // If no results are found and Lucene Did You Mean is present, then redirect to Lucene DYM
+            if (module_exists('luceneapi_dym') && $suggestions = luceneapi_dym_suggestions_get($keys)) {
+              $lucene_dym_path = preg_replace('/^.*href="\/search\/luceneapi_node\/([^"]*)".*$/i', '$1', $suggestions);
+              search404_goto($lucene_dym_path);
+            }
             // If we are searching with apache solr, use the no results text 
             // from the apachesolr_search module (#1127412).
             if (module_exists('apachesolr_search')) {
@@ -189,6 +194,10 @@ function search404_page() {
           $results = theme('box', t('Search results'), $results);
         }
       }
+    }
+    // If Lucent DYM is present then add Lucene "Did You Mean" to results
+    if (module_exists('luceneapi_dym') && $suggestions = luceneapi_dym_suggestions_get($keys)) {
+      $results = theme('box', t('Did you mean'), $suggestions) . $results;
     }
     // Construct the search form.
     $output = variable_get('search404_page_text', '') . drupal_get_form('search_form', NULL, $keys, $type_search) . $results;

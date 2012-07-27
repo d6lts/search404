@@ -15,7 +15,7 @@ function search404_menu() {
     'title' => 'Page not found',
     'access callback' => TRUE,
     'page callback' => 'search404_page',
-    'type' => MENU_LOCAL_TASK
+    'type' => MENU_CALLBACK,
   );
 
   $items['admin/settings/search404'] = array(

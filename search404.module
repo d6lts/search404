@@ -213,7 +213,7 @@ function search404_page() {
       $search_page = apachesolr_search_page_load('core_search');
       $form = drupal_get_form('apachesolr_search_custom_page_search_form', $search_page, $keys);
       // Set the action to point to the search page, otherwise form will submit to current 404 page
-      $form['#action'] = '/' . $form['#search_page']->search_path . $form['#action'];
+      $form['#action'] = '/' . $form['#search_page']['search_path'] . $form['#action'];
     }
     else {
       // Get the default search form

@@ -192,7 +192,7 @@ function search404_page() {
               drupal_set_message(t('The page you requested does not exist. For your convenience, a search was performed using the query %keys.', array('%keys' => check_plain($keys))), 'error');
             }
             if (isset($results['#results']) && count($results['#results']) >= 1) {
-              drupal_add_css(drupal_get_path('module', 'search') . '/search.css', 'module', 'all', FALSE);
+              drupal_add_css(drupal_get_path('module', 'search') . '/search.css');
             }
             else {
               $results = search_help('search#noresults', drupal_help_arg());

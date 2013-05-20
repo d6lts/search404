@@ -125,7 +125,7 @@ function search404_page() {
   $output = '';
   drupal_set_title(variable_get('search404_page_title', t('Page not found')));
   if (module_exists('search') && (user_access('search content') || user_access('search by page'))) {
-    $results = '';
+    $results = array();
 
     // Get and use the default search engine for the site.
     $default_search = search_get_default_module_info();
@@ -195,7 +195,7 @@ function search404_page() {
               drupal_add_css(drupal_get_path('module', 'search') . '/search.css');
             }
             else {
-              $results = search_help('search#noresults', drupal_help_arg());
+              $results['#markup'] = search_help('search#noresults', drupal_help_arg());
             }
           }
         }

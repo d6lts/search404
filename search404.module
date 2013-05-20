@@ -202,7 +202,9 @@ function search404_page() {
         else {
           // Normal $results['#results'] doesn't exist, we will not redirect
           // and just hope the strange search module knows how to render its output.
-          drupal_set_message(t('The page you requested does not exist. For your convenience, a search was performed using the query %keys.', array('%keys' => check_plain($keys))), 'error');
+          if (!variable_get('search404_disable_error_message', FALSE)) {
+            drupal_set_message(t('The page you requested does not exist. For your convenience, a search was performed using the query %keys.', array('%keys' => check_plain($keys))), 'error');
+          }
         }
       }
     }

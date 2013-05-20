@@ -216,7 +216,7 @@ function search404_page() {
       $form = drupal_get_form('apachesolr_search_custom_page_search_form', $search_page, $keys);
 
       // Set the action to point to the search page, otherwise form will submit to current 404 page
-      // Newer versions of apache_solr is returning search_page as an array while earlier versions 
+      // Newer versions of apache_solr is returning search_page as an array while earlier versions
       // to return an object. (#1923954)
       if (is_array($search_page)) {
         $search_path = $search_page['search_path'];

@@ -212,11 +212,15 @@ function search404_page() {
       module_load_include('inc', 'apachesolr_search', 'apachesolr_search.pages');
       $search_page = apachesolr_search_page_load('core_search');
       $form = drupal_get_form('apachesolr_search_custom_page_search_form', $search_page, $keys);
+
       // Set the action to point to the search page, otherwise form will submit to current 404 page
-      $form['#action'] = '/' . $form['#search_page']['search_path'] . $form['#action'];
+      $path = is_array($search_page) ? $search_page['search_path'] : $search_page->search_path;
+      $form['#action'] = url($path);
       // Remove the form value since it will include
       // the destination directive and force a search submit button loop
-      $form['basic']['get']['#value'] = '';
+      // If not reset properly, the resulting search form will have a
+      // destination pointing back to the broken page that triggered the 404
+      $form['basic']['get']['#value'] = json_encode(array());
     }
     else {
       // Get the default search form

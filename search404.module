@@ -220,6 +220,7 @@ function search404_page() {
       // to return an object. (#1923954)
       if (is_array($search_page)) {
         $search_path = $search_page['search_path'];
+      }
       else {
         $search_page->search_path;
       }

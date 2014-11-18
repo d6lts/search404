@@ -8,29 +8,30 @@
  * Setup Search 404 by changing Drupal's 404-page to search404.
  */
 function search404_install() {
-  variable_set('site_404', 'search404');
+  \Drupal::config('content_statistics.settings')->set('site_404','search404');
 }
 
 function search404_uninstall() {
-  if (variable_get('site_404', '') == 'search404') {
-    variable_del('site_404');
+  $site_404 = \Drupal::config('content_statistics.settings')->get('site_404');
+  if ($site_404 == 'search404') {
+    \Drupal::config('search404.settings')->clear('site_404')->save();
   }
-  variable_del('search404_redirect_301');
-  variable_del('search404_do_google_cse');
-  variable_del('search404_do_search_by_page');
-  variable_del('search404_first');
-  variable_del('search404_jump');
-  variable_del('search404_use_or');
-  variable_del('search404_ignore');
-  variable_del('search404_ignore_query');
-  variable_del('search404_ignore_extensions');
-  variable_del('search404_page_text');
-  variable_del('search404_page_title');
-  variable_del('search404_regex');
-  variable_del('search404_skip_auto_search');
-  variable_del('search404_use_or');
-  variable_del('search404_use_search_engine');
-  variable_del('search404_disable_error_message');
-  variable_del('search404_do_custom_search');
-  variable_del('search404_custom_search_path');
+  \Drupal::config('search404.settings')->clear('search404_redirect_301')->save();
+  \Drupal::config('search404.settings')->clear('search404_do_google_cse')->save();
+  \Drupal::config('search404.settings')->clear('search404_do_search_by_page')->save();
+  \Drupal::config('search404.settings')->clear('search404_first')->save();
+  \Drupal::config('search404.settings')->clear('search404_jump')->save();
+  \Drupal::config('search404.settings')->clear('search404_use_or')->save();
+  \Drupal::config('search404.settings')->clear('search404_ignore')->save();
+  \Drupal::config('search404.settings')->clear('search404_ignore_query')->save();
+  \Drupal::config('search404.settings')->clear('search404_ignore_extensions')->save();
+  \Drupal::config('search404.settings')->clear('search404_page_text')->save();
+  \Drupal::config('search404.settings')->clear('search404_page_title')->save();
+  \Drupal::config('search404.settings')->clear('search404_regex')->save();
+  \Drupal::config('search404.settings')->clear('search404_skip_auto_search')->save();
+  \Drupal::config('search404.settings')->clear('search404_use_or')->save();
+  \Drupal::config('search404.settings')->clear('search404_use_search_engine')->save();
+  \Drupal::config('search404.settings')->clear('search404_disable_error_message')->save();
+  \Drupal::config('search404.settings')->clear('search404_do_custom_search')->save();
+  \Drupal::config('search404.settings')->clear('search404_custom_search_path')->save();
 }

@@ -1,0 +1,10 @@
+name: 'Search 404'
+description: "Automatically search for the keywords in URLs that result in 404 errors and show results instead of Page-Not-Found. "
+dependencies:
+  - search
+core: 8.x
+type: module
+version: 8.x-1.x-dev
+project: search404
+
+configure: search404.settings

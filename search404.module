@@ -47,7 +47,9 @@ function search404_get_keys() {
   }
   // If keys are not yet populated from a search engine referer
   // use keys from the path that resulted in the 404.
-  if (!$keys) {
+  // TODO: Figure out why $_GET['destination'] is not getting
+  // populated. https://www.drupal.org/node/1445186
+  if (!$keys && isset($_GET['destination'])) {
     $keys = $_GET['destination'];
   }
 

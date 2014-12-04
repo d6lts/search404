@@ -26,7 +26,7 @@ function search404_get_keys() {
   // If keys are not yet populated from a search engine referer
   // use keys from the path that resulted in the 404.
   if (!$keys) {
-    $keys = $_GET['destination'];
+    $keys = \Drupal::request()->query->get('destination');
   }
 
   // Abort query on certain extensions, e.g: gif jpg jpeg png
@@ -61,7 +61,6 @@ function search404_get_keys() {
   return $keys;
 }
 
-
 /**
  * Detect search from search engine.
  */
@@ -86,7 +85,6 @@ function search404_search_engine_query() {
       }
     }
   }
-
   return '';
 }
 
@@ -94,14 +92,12 @@ function search404_search_engine_query() {
  * Search404 drupal_goto helper function.
  */
 function search404_goto($path = '') {
-  // Overwrite $_GET['destination'] because it is set by drupal_not_found().
-  $_GET['destination'] = $path;
-  // Set 301 redirect if so specified in settings else do default 302 redirect.
+  // set redirect response.
+  $response = new RedirectResponse($path);
   if (\Drupal::config('search404.settings')->get('search404_redirect_301')) {
-    $http_status = 301;
+    $response->setStatusCode(301);
   }
-  else {
-    $http_status = 302;
-  }
-  return new RedirectResponse(\Drupal::url($path),array(), $http_status);
+  $response->send();
+  return;
+  
 }

@@ -8,13 +8,13 @@
  * Setup Search 404 by changing Drupal's 404-page to search404.
  */
 function search404_install() {
-  \Drupal::config('content_statistics.settings')->set('site_404','search404');
+  \Drupal::config('system.site')->set('page.404','search404')->save();
 }
 
 function search404_uninstall() {
-  $site_404 = \Drupal::config('content_statistics.settings')->get('site_404');
+  $site_404 = \Drupal::config('system.site')->get('page.404');
   if ($site_404 == 'search404') {
-    \Drupal::config('search404.settings')->clear('site_404')->save();
+    \Drupal::config('system.site')->clear('page.404')->save();
   }
   \Drupal::config('search404.settings')->clear('search404_redirect_301')->save();
   \Drupal::config('search404.settings')->clear('search404_do_google_cse')->save();

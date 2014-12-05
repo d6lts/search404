@@ -11,6 +11,9 @@ use Drupal\Core\Form\ConfigFormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Render\Element;
 
+/**
+ * Configure settings for search404.
+ */
 class Search404Settings extends ConfigFormBase {
   
   /**
@@ -20,6 +23,9 @@ class Search404Settings extends ConfigFormBase {
     return 'search404_settings';
   }
 
+  /**
+   * {@inheritdoc}
+   */
   public function buildForm(array $form, FormStateInterface $form_state) {
     $form['search404_jump'] = array(
       '#type' => 'checkbox',
@@ -47,7 +53,7 @@ class Search404Settings extends ConfigFormBase {
       '#attributes' => \Drupal::moduleHandler()->moduleExists('search_by_page') ? array()  : array('disabled' => 'disabled'),
       '#default_value' => \Drupal::config('search404.settings')->get('search404_do_search_by_page'),
     );
-    // Custom search path implementation (for Search API integration #1076190)
+    // Custom search path implementation.
     $form['search404_do_custom_search'] = array(
       '#type' => 'checkbox',
       '#title' => t('Do a "Search" with custom path instead of a Drupal Search when a 404 occurs'),
@@ -156,7 +162,6 @@ class Search404Settings extends ConfigFormBase {
   /**
    * {@inheritdoc}
    */
-   
   public function submitForm(array &$form, FormStateInterface $form_state) {
     $this->config('search404.settings')
          ->set('search404_redirect_301', $form_state->getValue('search404_redirect_301'))

@@ -1,8 +1,8 @@
 <?php
-/* *
+
+/**
  * @file
- * The search404 module file, does all the searching
- * when a 404 occurs
+ * The search404 module file, does all the searching when a 404 occurs.
  */
 
 use Drupal\Component\Utility\Unicode;
@@ -52,7 +52,7 @@ function search404_get_keys() {
 
   // Ignore certain words (use case insensitive search).
   $keys = array_udiff($keys, explode(' ', \Drupal::config('search404.settings')->get('search404_ignore')), 'strcasecmp');
-  //Sanitize the keys
+  // Sanitize the keys
   foreach ($keys as $a => $b) {
     $keys[$a] = String::checkPlain($b);
   }
@@ -99,5 +99,4 @@ function search404_goto($path = '') {
   }
   $response->send();
   return;
-  
 }

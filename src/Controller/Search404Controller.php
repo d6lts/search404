@@ -26,7 +26,7 @@ class Search404Controller extends ControllerBase {
   /**
    * {@inheritdoc}
    *
-   * Function set title for the page not found page.
+   * Set title for the page not found(404) page.
    */
   public function getTitle() {
     $search404_page_title = \Drupal::config('search404.settings')->get('search404_page_title');
@@ -54,7 +54,7 @@ class Search404Controller extends ControllerBase {
     $keys = search404_get_keys();
     $plugin->setSearch($keys, $request->query->all(), $request->attributes->all());
     
-     if ($keys && !\Drupal::config('search404.settings')->get('search404_skip_auto_search')) {
+    if ($keys && !\Drupal::config('search404.settings')->get('search404_skip_auto_search')) {
      //if custom search enabled.
      if (\Drupal::config('search404.settings')->get('search404_do_custom_search')) {
        if (!\Drupal::config('search404.settings')->get('search404_disable_error_message')) {
@@ -96,8 +96,6 @@ class Search404Controller extends ControllerBase {
               search404_goto($result_path);
              }
              else {
-               // Normal $results['#results'] doesn't exist, we will not redirect
-               // and just hope the strange search module knows how to render its output.
                if (!\Drupal::config('search404.settings')->get('search404_disable_error_message')) {
                  drupal_set_message(t('The page you requested does not exist. For your convenience, a search was performed using the query %keys.', array('%keys' => String::checkPlain($keys))), 'error');
                }
@@ -106,14 +104,16 @@ class Search404Controller extends ControllerBase {
     }
    }
    
-   //Set the custom page text on the top
+   // Construct the search form.
+   $build['search_form'] = $this->entityFormBuilder()->getForm($entity, 'search');
+   
+   //Set the custom page text on the top of the results.
    $search404_page_text = \Drupal::config('search404.settings')->get('search404_page_text');
    if (!empty($search404_page_text)) {
      $build['content']['#markup'] = '<div id="search404-page-text">'.$search404_page_text.'</div>';
    }
-    
-   // Construct the search form.
-   $build['search_form'] = $this->entityFormBuilder()->getForm($entity, 'search');
+
+   //Text for,if search results is empty.    
    $no_results = t('<ul>
      <li>Check if your spelling is correct.</li>
      <li>Remove quotes around phrases to search for each word individually. <em>bike shed</em> will often show more results than <em>&quot;bike shed&quot;</em>.</li>
@@ -123,7 +123,6 @@ class Search404Controller extends ControllerBase {
      '#theme' => array('item_list__search_results__' . $plugin->getPluginId(), 'item_list__search_results'),
      '#items' => $results,
      '#empty' => array(
-       // @todo Revisit where this help text is added.
        '#markup' => '<h3>' . $this->t('Your search yielded no results.') . '</h3>' . $no_results,
       ),
      '#list_type' => 'ol',

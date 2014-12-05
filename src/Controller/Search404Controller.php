@@ -54,6 +54,7 @@ class Search404Controller extends ControllerBase {
     $keys = search404_get_keys();
     $plugin->setSearch($keys, $request->query->all(), $request->attributes->all());
     
+
     if ($keys && !\Drupal::config('search404.settings')->get('search404_skip_auto_search')) {
      //if custom search enabled.
      if (\Drupal::config('search404.settings')->get('search404_do_custom_search')) {

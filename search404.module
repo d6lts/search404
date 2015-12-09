@@ -263,6 +263,15 @@ function search404_page() {
 function search404_goto($path = '') {
   // Overwrite $_GET['destination'] because it is set by drupal_not_found().
   $_GET['destination'] = $path;
+
+  if (variable_get('search404_no_redirect', FALSE)) {
+    $options = drupal_parse_url($path);
+    $_GET += $options['query'];
+    menu_set_active_item($options['path']);
+    menu_execute_active_handler();
+    exit();
+  }
+
   // Set 301 redirect if so specified in settings else do default 302 redirect.
   if (variable_get('search404_redirect_301', FALSE)) {
     $http_status = 301;
@@ -316,9 +325,13 @@ function search404_settings() {
     '#description' => t('The custom search path: example: myownsearch/@keys or myownsearch?txt_s=@keys. The token "@keys" will be replaced with the search keys from the URL.'),
     '#default_value' => variable_get('search404_custom_search_path', 'search/@keys'),
   );
+  $form['search404_no_redirect'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('Execute the callback directly instead of redirecting'),
+    '#description' => t('This experimental feature notably allows to force 404 when using a custom search path.'),
+    '#default_value' => variable_get('search404_no_redirect', FALSE),
+  );
   // Added for having a 301 redirect instead of the standard 302 (offered by the drupal_goto).
-  // TODO: jump to search pages should still return 404 and not 301 or 302 for searches other
-  // than Core, Apache Solr, Lucene and Xapian. Can this even be done? Meta refresh?
   $form['search404_redirect_301'] = array(
     '#type' => 'checkbox',
     '#title' => t('Use a 301 Redirect instead of 302 Redirect'),

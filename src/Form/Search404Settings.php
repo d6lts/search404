@@ -15,7 +15,14 @@ use Drupal\Core\Render\Element;
  * Configure settings for search404.
  */
 class Search404Settings extends ConfigFormBase {
-  
+
+  /**
+   * {@inheritdoc}
+   */
+  protected function getEditableConfigNames() {
+    return array('system.site');
+  }
+
   /**
    * {@inheritdoc}
    */

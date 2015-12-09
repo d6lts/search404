@@ -4,7 +4,6 @@
  * @file
  * The search404 module file, does all the searching when a 404 occurs.
  */
-
 use Drupal\Component\Utility\Unicode;
 use Drupal\Component\Utility\String;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -15,8 +14,6 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
  * that resulted in the 404
  */
 function search404_get_keys() {
-  $language = \Drupal::languageManager()->getCurrentLanguage();
-
   $keys = '';
   // Try to get keywords from the search result (if it was one)
   // that resulted in the 404 if the config is set.
@@ -37,7 +34,6 @@ function search404_get_keys() {
   }
 
   $regex_filter = \Drupal::config('search404.settings')->get('search404_regex');
-  $keys_array[] = $keys;
   if (!empty($regex_filter)) {
     $keys = preg_replace("/" . $regex_filter . "/i", '', $keys);
   }
@@ -48,7 +44,7 @@ function search404_get_keys() {
     $keys = preg_replace("/\.($extensions)$/i", '', $keys);
   }
 
-  $keys = preg_split('/[' . Unicode::PREG_CLASS_WORD_BOUNDARY  . ']+/u', $keys);
+  $keys = preg_split('/[' . Unicode::PREG_CLASS_WORD_BOUNDARY . ']+/u', $keys);
 
   // Ignore certain words (use case insensitive search).
   $keys = array_udiff($keys, explode(' ', \Drupal::config('search404.settings')->get('search404_ignore')), 'strcasecmp');

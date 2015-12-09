@@ -126,6 +126,7 @@ function search404_search_engine_query() {
 function search404_page() {
   $output = '';
   drupal_set_title(variable_get('search404_page_title', t('Page not found')));
+  $keys = search404_get_keys();
   if (module_exists('search') && (user_access('search content') || user_access('search by page'))) {
     $results = array();
 
@@ -133,7 +134,6 @@ function search404_page() {
     $default_search = search_get_default_module_info();
     $type_search = $default_search['module'];
 
-    $keys = search404_get_keys();
     // Get throttle status
     $throttle = module_invoke('throttle', 'status');
     // If search keys are present and site is not throttled and automatic searching is not disabled.
@@ -150,14 +150,6 @@ function search404_page() {
           drupal_set_message(t('The page you requested does not exist. For your convenience, a google search was performed using the query %keys.', array('%keys' => check_plain($keys))), 'error');
         }
         search404_goto('search/google/' . $keys);
-      }
-      elseif (variable_get('search404_do_custom_search', FALSE)) {
-        if (!variable_get('search404_disable_error_message', FALSE)) {
-          drupal_set_message(t('The page you requested does not exist. For your convenience, a search was performed using the query %keys.', array('%keys' => check_plain($keys))), 'error');
-        }
-        $custom_search_path = variable_get('search404_custom_search_path', 'search/@keys');
-        $custom_search_path = str_replace('@keys', $keys, $custom_search_path);
-        search404_goto($custom_search_path);
       }
       else {
         // Called for apache solr, lucene, xapian and core search.
@@ -244,6 +236,20 @@ function search404_page() {
       $output = '<div id="search404-page-text">' . $search404_page_text . '</div>' . $output;
     }
   }
+  if (variable_get('search404_do_custom_search', FALSE)) {
+    $custom_search_path = variable_get('search404_custom_search_path', 'search/@keys');
+    // Remove query parameters before checking whether the search path exists or the user
+    // has access rights.
+    $custom_search_path_no_query = preg_replace('/\?.*/', '', $custom_search_path);
+    if (drupal_valid_path($custom_search_path_no_query)) {
+      if (!variable_get('search404_disable_error_message', FALSE)) {
+        drupal_set_message(t('The page you requested does not exist. For your convenience, a search was performed using the query %keys.', array('%keys' => check_plain($keys))), 'error');
+      }
+      $custom_search_path = str_replace('@keys', $keys, $custom_search_path);
+      search404_goto($custom_search_path);
+    }
+  }
+
   // If the user does not have search permissions $output would be empty.
   if ($output == '') {
     $output = t('The page you requested does not exist.');

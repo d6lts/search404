@@ -170,7 +170,7 @@ class Search404Settings extends ConfigFormBase {
    * {@inheritdoc}
    */
   public function submitForm(array &$form, FormStateInterface $form_state) {
-    $this->config('search404.settings')
+    $this->configFactory()->getEditable('search404.settings')
          ->set('search404_redirect_301', $form_state->getValue('search404_redirect_301'))
          ->set('search404_do_google_cse', $form_state->getValue('search404_do_google_cse'))
          ->set('search404_do_search_by_page', $form_state->getValue('search404_do_search_by_page'))

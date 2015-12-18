@@ -2,7 +2,7 @@ search404.page:
   path: /search404
   defaults:
     _title_callback: '\Drupal\search404\Controller\Search404Controller::getTitle'
-    _content: '\Drupal\search404\Controller\Search404Controller::search404_page'
+    _controller: '\Drupal\search404\Controller\Search404Controller::search404_page'
   requirements:
     _permission: 'access content'
 search404.settings:

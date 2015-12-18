@@ -7,7 +7,7 @@ INSTALLATION:
 -------------
 1. Extract the tar.gz into your 'modules' or directory.
 2. Enable the module at 'administer >> site building >> modules'.
-3. The module will automaticly replace the path to your 404 page with "search404"
+3. The module will automatically replace the path to your 404 page with "search404"
 
 CONFIGURATION
 -------------
@@ -24,4 +24,3 @@ Written by Lars Sehested Geisler <drupal@larsgeisler.dk>
 Maintained by Zyxware, http://www.zyxware.com/
 Some code from Steven (found at http://drupal.org/node/12668)
 Originally maintained by Johan Forngren, http://johan.forngren.com/
-

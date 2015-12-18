@@ -5,7 +5,7 @@
  * The search404 module file, does all the searching when a 404 occurs.
  */
 use Drupal\Component\Utility\Unicode;
-use Drupal\Component\Utility\String;
+use Drupal\Component\Utility\Html;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 
 /**
@@ -22,8 +22,8 @@ function search404_get_keys() {
   }
   // If keys are not yet populated from a search engine referer
   // use keys from the path that resulted in the 404.
-  if (!$keys) {
-    $keys = \Drupal::request()->query->get('destination');
+  if (empty($keys)) {
+    $keys = \Drupal::request()->server->get('REDIRECT_URL');
   }
 
   // Abort query on certain extensions, e.g: gif jpg jpeg png
@@ -50,7 +50,7 @@ function search404_get_keys() {
   $keys = array_udiff($keys, explode(' ', \Drupal::config('search404.settings')->get('search404_ignore')), 'strcasecmp');
   // Sanitize the keys
   foreach ($keys as $a => $b) {
-    $keys[$a] = String::checkPlain($b);
+    $keys[$a] = Html::escape($b);
   }
   $modifier = \Drupal::config('search404.settings')->get('search404_use_or') ? ' OR ' : ' ';
   $keys = trim(implode($modifier, $keys));

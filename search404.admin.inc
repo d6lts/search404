@@ -47,6 +47,11 @@ function search404_settings() {
     '#title' => t('Custom search path'),
     '#description' => t('The custom search path: example: myownsearch/@keys or myownsearch?txt_s=@keys. The token "@keys" will be replaced with the search keys from the URL.'),
     '#default_value' => variable_get('search404_custom_search_path', 'search/@keys'),
+    '#states' => array(
+      'visible' => array(
+        ':input[name="search404_do_custom_search"]' => array('checked' => TRUE),
+      ),
+    ),
   );
   $form['search404_no_redirect'] = array(
     '#type' => 'checkbox',

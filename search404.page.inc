@@ -73,7 +73,7 @@ function search404_search_engine_query() {
     'lycos' => 'query',
     'yahoo' => 'p',
   );
-  $parsed_url = parse_url($_SERVER['HTTP_REFERER']);
+  $parsed_url = !empty($_SERVER['HTTP_REFERER']) ? parse_url($_SERVER['HTTP_REFERER']) : FALSE;
   $remote_host = !empty($parsed_url['host']) ? $parsed_url['host'] : '';
   $query_string = !empty($parsed_url['query']) ? $parsed_url['query'] : '';
   $query = array();

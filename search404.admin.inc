@@ -28,6 +28,13 @@ function search404_settings() {
     '#attributes' => module_exists('google_cse') ? array()  : array('disabled' => 'disabled'),
     '#default_value' => variable_get('search404_do_google_cse', FALSE),
   );
+  $form['search404_do_google_cse_adv'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('Do a "Google CSE Advanced" search instead of a Drupal Search when a 404 occurs'),
+    '#description' => t('Requires Google CSE Advanced Search Module to be Enabled.'),
+    '#attributes' => module_exists('google_cse_adv') ? array() : array('disabled' => 'disabled'),
+    '#default_value' => variable_get('search404_do_google_cse_adv', FALSE),
+  );
   $form['search404_do_search_by_page'] = array(
     '#type' => 'checkbox',
     '#title' => t('Do a "Search by page" Search instead of a Drupal Search when a 404 occurs'),

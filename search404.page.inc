@@ -130,6 +130,10 @@ function search404_page() {
         search404_error_message($keys);
         search404_goto('search/google/' . $keys);
       }
+      elseif (module_exists('google_cse_adv') && user_access('search content') && variable_get('search404_do_google_cse_adv', FALSE)) {
+        search404_error_message($keys);
+        search404_goto('search/google_cse_adv/' . $keys);
+      }
       else {
         // Called for apache solr, lucene, xapian and core search.
         $results = search_data($keys, $type_search);

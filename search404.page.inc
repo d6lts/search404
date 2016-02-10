@@ -23,6 +23,7 @@ function search404_get_keys() {
   // populated. https://www.drupal.org/node/1445186
   if (!$keys && isset($_GET['destination'])) {
     $keys = $_GET['destination'];
+    drupal_alter('search404_keys', $keys);
   }
 
   // Abort query on certain extensions, e.g: gif jpg jpeg png

@@ -174,7 +174,7 @@ function search404_page() {
     if ($type_search == 'apachesolr_search') {
       // Get Apachesolr search form
       module_load_include('inc', 'apachesolr_search', 'apachesolr_search.pages');
-      $search_page = apachesolr_search_page_load('core_search');
+      $search_page = apachesolr_search_page_load(apachesolr_search_default_search_page());
       $form = drupal_get_form('apachesolr_search_custom_page_search_form', $search_page, $keys);
 
       // Set the action to point to the search page, otherwise form will submit to current 404 page
@@ -185,6 +185,7 @@ function search404_page() {
       }
       else {
         $search_page->search_path;
+        $search_path = $search_page->search_path;
       }
       $form['#action'] = url($search_path);
       // Remove the form value since it will include

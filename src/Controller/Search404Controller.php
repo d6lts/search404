@@ -8,6 +8,8 @@
 namespace Drupal\search404\Controller;
 
 use Drupal\Core\Controller\ControllerBase;
+use Drupal\Core\Logger\LoggerChannelFactoryInterface;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Drupal\search\Entity\SearchPage;
 use Drupal\Component\Utility\Html;
@@ -16,6 +18,29 @@ use Drupal\Component\Utility\Html;
  * Route controller for search.
  */
 class Search404Controller extends ControllerBase {
+
+  /**
+   * @var \Drupal\Core\Logger\LoggerChannelFactoryInterface
+   */
+  protected $logger;
+
+  /**
+   *
+   * @param \Drupal\Core\Logger\LoggerChannelFactoryInterface $logger_factory
+   *   Inject the logger channel factory interface.
+   */
+  public function __construct(LoggerChannelFactoryInterface $logger_factory) {
+    $this->logger = $logger_factory->get('search404');
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public static function create(ContainerInterface $container) {
+    return new static(
+      $container->get('logger.factory')
+    );
+  }
 
   /**
    * {@inheritdoc}

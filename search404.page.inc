@@ -97,9 +97,17 @@ function search404_search_engine_query() {
  */
 function search404_error_message($keys) {
   if (!variable_get('search404_disable_error_message', FALSE)) {
-    drupal_set_message(t('The page you requested does not exist. For your '
-            . 'convenience, a search was performed using the query'
-            . ' @keys.', array('@keys' => $keys)), 'error');
+    $default_message = t('The page you requested does not exist. For your '
+        . 'convenience, a search was performed using the query'
+        . ' @keys.', array('@keys' => $keys));
+    $show_message = variable_get('search404_search_message', '');
+    if(!empty($show_message)) {
+      $show_message = format_string($show_message, array('@keys' => $keys));
+    }
+    else {
+      $show_message = $default_message;
+    }
+    drupal_set_message($show_message, 'error');
   }
 }
 

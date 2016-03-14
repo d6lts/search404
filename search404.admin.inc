@@ -87,6 +87,12 @@ function search404_settings() {
     '#description' => t('Disable the Drupal error message when search results are shown on a 404 page.'),
     '#default_value' => variable_get('search404_disable_error_message', FALSE),
   );
+  $form['search404_search_message'] = array(
+    '#title' => t('Custom error message'),
+    '#type' => 'textfield',
+    '#description' => t('A custom error message that should be displayed when search results are shown on a 404 page, use "@keys" to insert the searched key value.'),
+    '#default_value' => variable_get('search404_search_message', ''),
+  );
   $form['advanced'] = array(
     '#type' => 'fieldset',
     '#title' => t('Advanced settings'),

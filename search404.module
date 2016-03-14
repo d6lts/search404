@@ -32,3 +32,45 @@ function search404_menu() {
 
   return $items;
 }
+
+/**
+ * Implements hook_block_info().
+ *
+ * Provides:
+ *
+ * - Search Results block: same as the search404 page, but with only the results
+ */
+function search404_block_info() {
+  $blocks = array();
+  $blocks['search404_results'] = array(
+    'info' => t('Search Results'),
+  );
+  return $blocks;
+}
+
+/**
+ * Implements hook_block_view().
+ */
+function search404_block_view($delta = '') {
+  if ($delta == 'search404_results') {
+    $block = array();
+    module_load_include('inc', 'search404', 'search404.page');
+    $keys = search404_get_keys();
+    list($default_search, $type_search) = search404_get_default_search();
+    $block['content'] = drupal_render(search404_results($keys, $type_search));
+    return $block;
+  }
+}
+
+/**
+ * Return the default search information
+ *
+ * @return array
+ *     Returns an array with two items: the result of search_get_default_module_info()
+ *     and the default search module
+ */
+function search404_get_default_search() {
+  $default_search = search_get_default_module_info();
+  $type_search = $default_search['module'];
+  return array($default_search, $type_search);
+}

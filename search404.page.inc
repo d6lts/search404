@@ -96,19 +96,17 @@ function search404_search_engine_query() {
  * @param string $keys Keywords
  */
 function search404_error_message($keys) {
-  if (!variable_get('search404_disable_error_message', FALSE)) {
-    $default_message = t('The page you requested does not exist. For your '
-        . 'convenience, a search was performed using the query'
-        . ' @keys.', array('@keys' => $keys));
-    $show_message = variable_get('search404_search_message', '');
-    if(!empty($show_message)) {
-      $show_message = format_string($show_message, array('@keys' => $keys));
-    }
-    else {
-      $show_message = $default_message;
-    }
-    drupal_set_message($show_message, 'error');
+  $default_message = t('The page you requested does not exist. For your '
+      . 'convenience, a search was performed using the query'
+      . ' @keys.', array('@keys' => $keys));
+  $show_message = variable_get('search404_search_message', '');
+  if(!empty($show_message)) {
+    $show_message = format_string($show_message, array('@keys' => $keys));
   }
+  else {
+    $show_message = $default_message;
+  }
+  drupal_set_message($show_message, 'error');
 }
 
 /**
@@ -228,6 +226,10 @@ function search404_page() {
       $custom_search_path = str_replace('@keys', $keys, $custom_search_path);
       search404_goto($custom_search_path);
     }
+    else {
+      // get the search results
+      $results = search404_results($keys, $type_search);
+    }
   }
 
   // If the user does not have search permissions $output would be empty.
@@ -235,6 +237,63 @@ function search404_page() {
     $output = t('The page you requested does not exist.');
   }
   return $output;
+}
+
+/**
+ * Get the results for a search.
+ *
+ * @param array $keys The search keys
+ * @param string $type_search The search module to search
+ * @return array Renderable array of search results
+ */
+function search404_results($keys, $type_search) {
+  // Called for apache solr, lucene, xapian and core search.
+  $results = search_data($keys, $type_search);
+  // Apache Solr puts the results in $results['search_results'].
+  if (isset($results['search_results'])) {
+    $results = $results['search_results'];
+  }
+  // Some modules like ds_search (#1253426) returns its own results format
+  // and may not have $results['#results']
+  if (isset($results['#results'])) {
+    // Jump to first result if there are results and
+    // if there is only one result and if jump to first is selected or
+    // if there are more than one results and force jump to first is selected.
+    if (is_array($results['#results']) &&
+      (
+        (count($results['#results']) == 1 && variable_get('search404_jump', FALSE))
+        || (count($results['#results']) >= 1 && variable_get('search404_first', FALSE))
+      )
+    ) {
+      if (!variable_get('search404_disable_error_message', FALSE)) {
+        search404_error_message($keys);
+      }
+      if (isset($results['#results'][0]['node']->path)) {
+        $result_path = $results['#results'][0]['node']->path;
+      }
+      else {
+        $result_path = 'node/' . $results['#results'][0]['node']->nid;
+      }
+      search404_goto($result_path);
+    }
+    else {
+      if (!variable_get('search404_disable_error_message', FALSE)) {
+        search404_error_message($keys);
+      }
+      if (isset($results['#results']) && count($results['#results']) >= 1) {
+        drupal_add_css(drupal_get_path('module', 'search') . '/search.css', 'module', 'all', FALSE);
+      }
+      else {
+        $results = search_help('search#noresults', drupal_help_arg());
+      }
+    }
+  }
+  else {
+    // Normal $results['#results'] doesn't exist, we will not redirect
+    // and just hope the strange search module knows how to render its output.
+    search404_error_message($keys);
+  }
+  return $results;
 }
 
 /**

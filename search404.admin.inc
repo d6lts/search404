@@ -116,6 +116,12 @@ function search404_settings() {
     '#description' => t('These words will be ignored from the search query. Separate words with a space, e.g.: "and or the".'),
     '#default_value' => variable_get('search404_ignore', t('and or the')),
   );
+  $form['advanced']['search404_ignore_paths'] = array(
+    '#type' => 'textarea',
+    '#title' => t('Specific paths to ignore'),
+    '#description' => t('These paths will be ignored. Site default "Page not found" page will be displayed. Enter one path per line. The "*" character is a wildcard. Example paths are blog for the blog page and blog/* for every personal blog.'),
+    '#default_value' => variable_get('search404_ignore_paths', ''),
+  );
   $form['advanced']['search404_ignore_extensions'] = array(
     '#type' => 'textfield',
     '#title' => t('Extensions to ignore'),

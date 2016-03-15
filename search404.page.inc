@@ -118,6 +118,20 @@ function search404_page() {
   $output = '';
   drupal_set_title(variable_get('search404_page_title', t('Page not found')));
   $keys = search404_get_keys();
+
+  // If the current path is set as one of the ignore path, then do not get into
+  // the complex search functions.
+  $paths_to_ignore = variable_get('search404_ignore_paths', '');
+
+  if (!empty($paths_to_ignore)) {
+    $path = str_replace(' ', '/', $keys);
+    $page_match = drupal_match_path($path, $paths_to_ignore);
+
+    // If the page matches to any of the listed paths to ignore, then return.
+    if ($page_match) {
+      return;
+    }
+  }
   if (module_exists('search') && (user_access('search content') || user_access('search by page'))) {
     $results = array();
 

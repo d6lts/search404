@@ -165,13 +165,25 @@ function search404_page() {
         // Some modules like ds_search (#1253426) returns its own results format
         // and may not have $results['#results']
         if (isset($results['#results'])) {
+          // Check if there are any specific paths are set where only we need to
+          // jump to the first result.
+          $paths = variable_get('search404_first_on_paths', '');
+          $path_match = TRUE;
+
+          // Check if the current path exists in the set paths list.
+          if (!empty($paths)) {
+            $path = str_replace(' ', '/', $keys);
+            $path_match = drupal_match_path($path, $paths);
+          }
+
           // Jump to first result if there are results and
           // if there is only one result and if jump to first is selected or
-          // if there are more than one results and force jump to first is selected.
+          // if there are more than one results and force jump to first is selected
+          // and current path is set to jump to the first result.
           if (is_array($results['#results']) &&
             (
               (count($results['#results']) == 1 && variable_get('search404_jump', FALSE))
-              || (count($results['#results']) >= 1 && variable_get('search404_first', FALSE))
+              || (count($results['#results']) >= 1 && variable_get('search404_first', FALSE) && $path_match)
             )
           ) {
             search404_error_message($keys);

@@ -21,6 +21,12 @@ function search404_settings() {
     '#description' => t('Works only with Core, Apache Solr, Lucene and Xapian searches. An HTTP status of 301 or 302 will be returned for this redirect.'),
     '#default_value' => variable_get('search404_first', FALSE),
   );
+  $form['search404_first_on_paths'] = array(
+    '#type' => 'textarea',
+    '#title' => t('Jump directly to the first search result only on the listed paths.'),
+    '#description' => t(' Enter one path per line. The "*" character is a wildcard. Example paths are blog for the blog page and blog/* for every personal blog.'),
+    '#default_value' => variable_get('search404_first_on_paths', ''),
+  );
   $form['search404_do_google_cse'] = array(
     '#type' => 'checkbox',
     '#title' => t('Do a Google CSE Search instead of a Drupal Search when a 404 occurs'),

@@ -93,12 +93,39 @@ function search404_search_engine_query() {
 
 /**
  * Displays an error message of page not found
+ *
  * @param string $keys Keywords
+ * @param boolean $jump_to_result
+ *  This param indicates wheather the search is jumped to a particlar search
  */
-function search404_error_message($keys) {
-  $default_message = t('The page you requested does not exist. For your '
+function search404_error_message($keys, $jump_to_result = FALSE) {
+  if ($jump_to_result) {
+    $default_message = t('The page you requested does not exist. For your '
       . 'convenience, a search was performed using the query'
-      . ' @keys.', array('@keys' => $keys));
+      . ' @keys. Not quite what you were looking for? !other_results.',
+      array(
+        '@keys' => $keys,
+        '!other_results' => l(
+          'Other results',
+          'search404',
+          array(
+            'query' => array(
+              'no_jump' => 1,
+              'destination' => $keys,
+            ),
+          )
+        )
+      )
+    );
+  }
+  else {
+    $default_message = t('The page you requested does not exist. For your '
+        . 'convenience, a search was performed using the query'
+        . ' @keys.',
+        array(
+          '@keys' => $keys,
+        ));
+  }
   $show_message = variable_get('search404_search_message', '');
   if(!empty($show_message)) {
     $show_message = format_string($show_message, array('@keys' => $keys));
@@ -180,13 +207,15 @@ function search404_page() {
           // if there is only one result and if jump to first is selected or
           // if there are more than one results and force jump to first is selected
           // and current path is set to jump to the first result.
+          // AND if no_jump is not set.
           if (is_array($results['#results']) &&
             (
               (count($results['#results']) == 1 && variable_get('search404_jump', FALSE))
               || (count($results['#results']) >= 1 && variable_get('search404_first', FALSE) && $path_match)
-            )
+            ) &&
+            !isset($_GET['no_jump'])
           ) {
-            search404_error_message($keys);
+            search404_error_message($keys, TRUE);
             $result_path = drupal_get_path_alias('node/' . $results['#results'][0]['node']->nid);
             search404_goto($result_path);
           }

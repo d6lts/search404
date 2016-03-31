@@ -13,8 +13,7 @@ function search404_variable_info($options) {
     'type' => 'string',
     'title' => t('Custom page title', array(), $options),
     'default' => '',
-    'description' => t('You can enter a value that will be displayed as the '
-        . 'title of the webpage e.g. "Page not found".', array(), $options),
+    'description' => t('You can enter a value that will be displayed as the title of the webpage e.g. "Page not found".', array(), $options),
     'required' => FALSE,
     'group' => 'search404',
     'localize' => TRUE,
@@ -25,8 +24,17 @@ function search404_variable_info($options) {
     'type' => 'string',
     'title' => t('Custom page text', array(), $options),
     'default' => '',
-    'description' => t('You can enter a custom text message that can be '
-        . 'displayed at the top of the search results, HTML formatting can be used.', array(), $options),
+    'description' => t('You can enter a custom text message that can be displayed at the top of the search results, HTML formatting can be used.', array(), $options),
+    'required' => FALSE,
+    'group' => 'search404',
+    'localize' => TRUE,
+    'multidomain' => TRUE,
+  );
+  $variables['search404_custom_search_path'] = array(
+    'type' => 'string',
+    'title' => t('Custom path', array(), $options),
+    'default' => '',
+    'description' => t('path you can enter which will be redirected to the custom search page.', array(), $options),
     'required' => FALSE,
     'group' => 'search404',
     'localize' => TRUE,

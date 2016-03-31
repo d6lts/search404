@@ -31,7 +31,7 @@ function search404_settings() {
     '#type' => 'checkbox',
     '#title' => t('Do a Google CSE Search instead of a Drupal Search when a 404 occurs'),
     '#description' => t('Requires Google CSE and Google CSE Search modules to be enabled.'),
-    '#attributes' => module_exists('google_cse') ? array()  : array('disabled' => 'disabled'),
+    '#attributes' => module_exists('google_cse') ? array() : array('disabled' => 'disabled'),
     '#default_value' => variable_get('search404_do_google_cse', FALSE),
   );
   $form['search404_do_google_cse_adv'] = array(
@@ -45,7 +45,7 @@ function search404_settings() {
     '#type' => 'checkbox',
     '#title' => t('Do a "Search by page" Search instead of a Drupal Search when a 404 occurs'),
     '#description' => t('Requires "Search by page" module to be enabled.'),
-    '#attributes' => module_exists('search_by_page') ? array()  : array('disabled' => 'disabled'),
+    '#attributes' => module_exists('search_by_page') ? array() : array('disabled' => 'disabled'),
     '#default_value' => variable_get('search404_do_search_by_page', FALSE),
   );
   // Custom search path implementation (for Search API integration #1076190)
@@ -109,6 +109,23 @@ function search404_settings() {
     '#type' => 'checkbox',
     '#title' => t('Use OR between keywords when searching'),
     '#default_value' => variable_get('search404_use_or', FALSE),
+  );
+  $form['advanced']['search404_do_custom_search'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('Do a "Search" with custom path instead of a Drupal Search when a 404 occurs'),
+    '#description' => t('Redirect the user to a Custom search path to be entered below. Can be used to open a view with path parameter.'),
+    '#default_value' => variable_get('search404_do_custom_search', FALSE),
+  );
+  $form['advanced']['search404_custom_search_path'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Custom search path'),
+    '#description' => t('The custom search path: example: myownsearch/@keys or myownsearch?txt_s=@keys. The token "@keys" will be replaced with the search keys from the URL.'),
+    '#default_value' => variable_get('search404_custom_search_path', 'search/@keys'),
+    '#states' => array(
+      'visible' => array(
+        ':input[name="search404_do_custom_search"]' => array('checked' => TRUE),
+      ),
+    ),
   );
   $form['advanced']['search404_use_search_engine'] = array(
     '#type' => 'checkbox',

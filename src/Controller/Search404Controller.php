@@ -7,9 +7,11 @@
 
 namespace Drupal\search404\Controller;
 
+use Drupal\Component\Utility\Unicode;
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\Logger\LoggerChannelFactoryInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Drupal\search\Entity\SearchPage;
 use Drupal\Component\Utility\Html;
@@ -70,7 +72,7 @@ class Search404Controller extends ControllerBase {
 
       // Build the form first, because it may redirect during the submit,
       // and we don't want to build the results based on last time's request.
-      $keys = search404_get_keys();
+      $keys = $this->search404_get_keys();
       $plugin->setSearch($keys, $request->query->all(), $request->attributes->all());
 
 
@@ -82,7 +84,7 @@ class Search404Controller extends ControllerBase {
           }
           $custom_search_path = \Drupal::config('search404.settings')->get('search404_custom_search_path');
           $custom_search_path = str_replace('@keys', $keys, $custom_search_path);
-          search404_goto($custom_search_path);
+          $this->search404_goto($custom_search_path);
         }
         else {
           // Build search results, if keywords or other search parameters are in the
@@ -112,7 +114,7 @@ class Search404Controller extends ControllerBase {
               if (isset($results[0]['#result']['link'])) {
                 $result_path = $results[0]['#result']['link'];
               }
-              search404_goto($result_path);
+              $this->search404_goto($result_path);
             }
             else {
               if (!\Drupal::config('search404.settings')->get('search404_disable_error_message')) {
@@ -164,4 +166,93 @@ class Search404Controller extends ControllerBase {
     }
   }
 
+  /**
+   * Search404 drupal_goto helper function.
+   * @param string $path Path to redirect
+   */
+  public function search404_goto($path = '') {
+    // set redirect response.
+    $response = new RedirectResponse($path);
+    if (\Drupal::config('search404.settings')->get('search404_redirect_301')) {
+      $response->setStatusCode(301);
+    }
+    $response->send();
+    return;
+  }
+
+  /**
+   * Detect search from search engine.
+   */
+  public function search404_search_engine_query() {
+    $engines = array(
+      'altavista' => 'q',
+      'aol' => 'query',
+      'google' => 'q',
+      'bing' => 'q',
+      'lycos' => 'query',
+      'yahoo' => 'p',
+    );
+    $parsed_url = parse_url($_SERVER['HTTP_REFERER']);
+    $remote_host = !empty($parsed_url['host']) ? $parsed_url['host'] : '';
+    $query_string = !empty($parsed_url['query']) ? $parsed_url['query'] : '';
+    parse_str($query_string, $query);
+
+    if (!$parsed_url === FALSE && !empty($remote_host) && !empty($query_string) && count($query)) {
+      foreach ($engines as $host => $key) {
+        if (strpos($remote_host, $host) !== FALSE && array_key_exists($key, $query)) {
+          return trim($query[$key]);
+        }
+      }
+    }
+    return '';
+  }
+
+  /**
+   * Get the keys that are to be used for the search based either
+   * on the keywords from the URL or from the keys from the search
+   * that resulted in the 404
+   */
+  public function search404_get_keys() {
+    $keys = '';
+    // Try to get keywords from the search result (if it was one)
+    // that resulted in the 404 if the config is set.
+    if (\Drupal::config('search404.settings')->get('search404_use_search_engine')) {
+      $keys = $this->search404_search_engine_query();
+    }
+    // If keys are not yet populated from a search engine referer
+    // use keys from the path that resulted in the 404.
+    if (empty($keys)) {
+      $keys = \Drupal::request()->server->get('REDIRECT_URL');
+    }
+
+    // Abort query on certain extensions, e.g: gif jpg jpeg png
+    $extensions = explode(' ', \Drupal::config('search404.settings')->get('search404_ignore_query'));
+    $extensions = trim(implode('|', $extensions));
+    if (!empty($extensions) && preg_match("/\.($extensions)$/i", $keys)) {
+      return FALSE;
+    }
+
+    $regex_filter = \Drupal::config('search404.settings')->get('search404_regex');
+    if (!empty($regex_filter)) {
+      $keys = preg_replace("/" . $regex_filter . "/i", '', $keys);
+    }
+    // Ignore certain extensions from query.
+    $extensions = explode(' ', \Drupal::config('search404.settings')->get('search404_ignore_extensions'));
+    $extensions = trim(implode('|', $extensions));
+    if (!empty($extensions)) {
+      $keys = preg_replace("/\.($extensions)$/i", '', $keys);
+    }
+
+    $keys = preg_split('/[' . Unicode::PREG_CLASS_WORD_BOUNDARY . ']+/u', $keys);
+
+    // Ignore certain words (use case insensitive search).
+    $keys = array_udiff($keys, explode(' ', \Drupal::config('search404.settings')->get('search404_ignore')), 'strcasecmp');
+    // Sanitize the keys
+    foreach ($keys as $a => $b) {
+      $keys[$a] = Html::escape($b);
+    }
+    $modifier = \Drupal::config('search404.settings')->get('search404_use_or') ? ' OR ' : ' ';
+    $keys = trim(implode($modifier, $keys));
+    return $keys;
+  }
 }

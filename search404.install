@@ -8,7 +8,7 @@
  * Setup Search 404 by changing Drupal's 404-page to search404.
  */
 function search404_install() {
-  \Drupal::configFactory()->getEditable('system.site')->set('page.404', 'search404')->save();
+  \Drupal::configFactory()->getEditable('system.site')->set('page.404', '/search404')->save();
 }
 
 function search404_uninstall() {

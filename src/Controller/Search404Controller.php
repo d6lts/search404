@@ -132,6 +132,7 @@ class Search404Controller extends ControllerBase {
       $search404_page_text = \Drupal::config('search404.settings')->get('search404_page_text');
       if (!empty($search404_page_text)) {
         $build['content']['#markup'] = '<div id="search404-page-text">' . $search404_page_text . '</div>';
+        $build['content']['#weight'] = -100;
       }
 
       //Text for,if search results is empty.

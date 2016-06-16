@@ -4,7 +4,5 @@ dependencies:
   - search
 core: 8.x
 type: module
-version: 8.x-1.x
-project: search404
 
 configure: search404.settings

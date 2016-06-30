@@ -133,7 +133,7 @@ function search404_error_message($keys, $jump_to_result = FALSE) {
   else {
     $show_message = $default_message;
   }
-  drupal_set_message($show_message, 'error');
+  drupal_set_message($show_message, 'error', FALSE);
 }
 
 /**

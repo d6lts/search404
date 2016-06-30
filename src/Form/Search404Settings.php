@@ -1,9 +1,4 @@
 <?php
-
-/**
- * @file
- * Contains \Drupal\search404\Form\Search404Settings.
- */
  
 namespace Drupal\search404\Form;
 

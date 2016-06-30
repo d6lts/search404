@@ -1,10 +1,5 @@
 <?php
 
-/**
- * @file
- * Contains Drupal\search404\Controller\Search404Controller.
- */
-
 namespace Drupal\search404\Controller;
 
 use Drupal\Component\Utility\Unicode;

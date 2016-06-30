@@ -76,7 +76,7 @@ class Search404Controller extends ControllerBase {
       if ($keys && !\Drupal::config('search404.settings')->get('search404_skip_auto_search')) {
         //if custom search enabled.
         if (\Drupal::moduleHandler()->moduleExists('search_by_page') && \Drupal::config('search404.settings')->get('search404_do_search_by_page')) {
-          drupal_set_message(t('The page you requested does not exist. For your convenience, a search was performed using the query %keys.', array('%keys' => Html::escape($keys))), 'error');
+          drupal_set_message(t('The page you requested does not exist. For your convenience, a search was performed using the query %keys.', array('%keys' => Html::escape($keys))), 'error', FALSE);
           $this->search404_goto('search_pages/' . $keys);
         }
         else {
@@ -102,7 +102,7 @@ class Search404Controller extends ControllerBase {
                 )
             ) {
               if (!\Drupal::config('search404.settings')->get('search404_disable_error_message')) {
-                drupal_set_message(t('The page you requested does not exist. A search for %keys resulted in this page.', array('%keys' => Html::escape($keys))), 'status');
+                drupal_set_message(t('The page you requested does not exist. A search for %keys resulted in this page.', array('%keys' => Html::escape($keys))), 'status', FALSE);
               }
               if (isset($results[0]['#result']['link'])) {
                 $result_path = $results[0]['#result']['link'];
@@ -111,7 +111,7 @@ class Search404Controller extends ControllerBase {
             }
             else {
               if (!\Drupal::config('search404.settings')->get('search404_disable_error_message')) {
-                drupal_set_message(t('The page you requested does not exist. For your convenience, a search was performed using the query %keys.', array('%keys' => Html::escape($keys))), 'error');
+                drupal_set_message(t('The page you requested does not exist. For your convenience, a search was performed using the query %keys.', array('%keys' => Html::escape($keys))), 'error', FALSE);
               }
             }
           }
@@ -164,7 +164,7 @@ class Search404Controller extends ControllerBase {
       $custom_search_path_no_query = preg_replace('/\?.*/', '', $custom_search_path);
       if (\Drupal::service('path.validator')->isValid($custom_search_path_no_query)) {
         if (!\Drupal::config('search404.settings')->get('search404_disable_error_message')) {
-          drupal_set_message(t('The page you requested does not exist. For your convenience, a search was performed using the query %keys.', array('%keys' => Html::escape($keys))), 'error');
+          drupal_set_message(t('The page you requested does not exist. For your convenience, a search was performed using the query %keys.', array('%keys' => Html::escape($keys))), 'error', FALSE);
         }
         $custom_search_path = str_replace('@keys', $keys, $custom_search_path);
         $this->search404_goto($custom_search_path);

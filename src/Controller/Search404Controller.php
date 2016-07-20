@@ -52,7 +52,7 @@ class Search404Controller extends ControllerBase {
    * Set title for the page not found(404) page.
    */
   public function getTitle() {
-    $search_404_page_title = \Drupal::config('search404.settings')->get('search_404_page_title');
+    $search_404_page_title = \Drupal::config('search404.settings')->get('search404_page_title');
     $title = !empty($search_404_page_title) ? $search_404_page_title : 'Page not found ';
     return $title;
   }
@@ -127,7 +127,7 @@ class Search404Controller extends ControllerBase {
       $build['search_form'] = $this->entityFormBuilder()->getForm($entity, 'search');
 
       // Set the custom page text on the top of the results.
-      $search_404_page_text = \Drupal::config('search404.settings')->get('search_404_page_text');
+      $search_404_page_text = \Drupal::config('search404.settings')->get('search404_page_text');
       if (!empty($search_404_page_text)) {
         $build['content']['#markup'] = '<div id="search404-page-text">' . $search_404_page_text . '</div>';
         $build['content']['#weight'] = -100;
@@ -242,7 +242,9 @@ class Search404Controller extends ControllerBase {
     // If keys are not yet populated from a search engine referer
     // use keys from the path that resulted in the 404.
     if (empty($keys)) {
-      $keys = \Drupal::request()->server->get('REDIRECT_URL');
+      $path = \Drupal::service('path.current')->getPath();
+      $paths = explode('/', $path);
+      $keys = end($paths);;
     }
     // Abort query on certain extensions, e.g: gif jpg jpeg png.
     $extensions = explode(' ', \Drupal::config('search404.settings')->get('search404_ignore_query'));

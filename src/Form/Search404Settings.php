@@ -1,10 +1,13 @@
 <?php
- 
+/**
+ * @file
+ * Contains \Drupal\search404\Form.
+ */
+
 namespace Drupal\search404\Form;
 
 use Drupal\Core\Form\ConfigFormBase;
 use Drupal\Core\Form\FormStateInterface;
-use Drupal\Core\Render\Element;
 
 /**
  * Configure settings for search404.
@@ -45,14 +48,14 @@ class Search404Settings extends ConfigFormBase {
       '#type' => 'checkbox',
       '#title' => t('Do a Google CSE Search instead of a Drupal Search when a 404 occurs'),
       '#description' => t('Requires Google CSE and Google CSE Search modules to be enabled.'),
-      '#attributes' => \Drupal::moduleHandler()->moduleExists('google_cse') ? array()  : array('disabled' => 'disabled'),
+      '#attributes' => \Drupal::moduleHandler()->moduleExists('google_cse') ? array() : array('disabled' => 'disabled'),
       '#default_value' => \Drupal::config('search404.settings')->get('search404_do_google_cse'),
     );
     $form['search404_do_search_by_page'] = array(
       '#type' => 'checkbox',
       '#title' => t('Do a "Search by page" Search instead of a Drupal Search when a 404 occurs'),
       '#description' => t('Requires "Search by page" module to be enabled.'),
-      '#attributes' => \Drupal::moduleHandler()->moduleExists('search_by_page') ? array()  : array('disabled' => 'disabled'),
+      '#attributes' => \Drupal::moduleHandler()->moduleExists('search_by_page') ? array() : array('disabled' => 'disabled'),
       '#default_value' => \Drupal::config('search404.settings')->get('search404_do_search_by_page'),
     );
     // Custom search path implementation.
@@ -68,8 +71,9 @@ class Search404Settings extends ConfigFormBase {
       '#description' => t('The custom search path: example: myownsearch/@keys or myownsearch?txt_s=@keys. The token "@keys" will be replaced with the search keys from the URL.'),
       '#default_value' => \Drupal::config('search404.settings')->get('search404_custom_search_path'),
     );
-    // Added for having a 301 redirect instead of the standard 302 (offered by the drupal_goto).
-    // than Core, Apache Solr, Lucene and Xapian. Can this even be done? Meta refresh?
+    // Added for having a 301 redirect instead of the standard 302
+    // (offered by the drupal_goto) than Core, Apache Solr,
+    // Lucene and Xapian. Can this even be done? Meta refresh?
     $form['search404_redirect_301'] = array(
       '#type' => 'checkbox',
       '#title' => t('Use a 301 Redirect instead of 302 Redirect'),
@@ -145,7 +149,8 @@ class Search404Settings extends ConfigFormBase {
       '#default_value' => \Drupal::config('search404.settings')->get('search404_page_text'),
       '#description' => t('You can enter a custom text message that can be displayed at the top of the search results, HTML formatting can be used.'),
     );
-    // Helps reset the site_404 variable to search404 in case the user changes it manually.
+    // Helps reset the site_404 variable to search404 in case the
+    // user changes it manually.
     $form['site_404'] = array(
       '#type' => 'hidden',
       '#value' => 'search404',
@@ -160,7 +165,7 @@ class Search404Settings extends ConfigFormBase {
 
     return parent::buildForm($form, $form_state);
   }
-  
+
   /**
    * {@inheritdoc}
    */
@@ -186,4 +191,5 @@ class Search404Settings extends ConfigFormBase {
          ->save();
     parent::submitForm($form, $form_state);
   }
+
 }

@@ -7,7 +7,8 @@ INSTALLATION:
 -------------
 1. Extract the tar.gz into your 'modules' or directory.
 2. Enable the module at 'administer >> site building >> modules'.
-3. The module will automatically replace the path to your 404 page with "search404"
+3. The module will automatically replace the path to your
+   404 page with "search404"
 
 CONFIGURATION
 -------------

@@ -167,7 +167,9 @@ class Search404Controller extends ControllerBase {
       // Remove query parameters before checking whether the search path
       // exists or the user has access rights.
       $custom_search_path_no_query = preg_replace('/\?.*/', '', $custom_search_path);
-      if (\Drupal::service('path.validator')->isValid($custom_search_path_no_query)) {
+      $current_path = \Drupal::service('path.current')->getPath();
+
+      if ($current_path == "/" . $keys) {
         if (!\Drupal::config('search404.settings')->get('search404_disable_error_message')) {
           drupal_set_message(t('The page you requested does not exist. For your convenience, a search was performed using the query %keys.', array('%keys' => Html::escape($keys))), 'error', FALSE);
         }

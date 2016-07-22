@@ -7,7 +7,6 @@
 
 namespace Drupal\search404\Controller;
 
-use Drupal\Component\Utility\Unicode;
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\Logger\LoggerChannelFactoryInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -274,10 +273,14 @@ class Search404Controller extends ControllerBase {
     foreach ($keys as $a => $b) {
       $keys[$a] = Html::escape($b);
     }
-     if(\Drupal::config('search404.settings')->get('search404_use_or')) {
+    if (\Drupal::config('search404.settings')->get('search404_use_or')) {
       $path = \Drupal::service('path.current')->getPath();
-      $keys = explode('/', substr($path,1));
+      $keys = explode('/', substr($path, 1));
       $keys = trim(implode(' OR ', $keys));
+    }
+    else {
+      $keys = trim(implode(' ', $keys));
+
     }
     return $keys;
   }

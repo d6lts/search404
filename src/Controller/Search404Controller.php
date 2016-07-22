@@ -274,8 +274,11 @@ class Search404Controller extends ControllerBase {
     foreach ($keys as $a => $b) {
       $keys[$a] = Html::escape($b);
     }
-    $modifier = \Drupal::config('search404.settings')->get('search404_use_or') ? ' OR ' : ' ';
-    $keys = trim(implode($modifier, $keys));
+     if(\Drupal::config('search404.settings')->get('search404_use_or')) {
+      $path = \Drupal::service('path.current')->getPath();
+      $keys = explode('/', substr($path,1));
+      $keys = trim(implode(' OR ', $keys));
+    }
     return $keys;
   }
 

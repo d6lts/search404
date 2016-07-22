@@ -14,6 +14,7 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Drupal\search\Entity\SearchPage;
 use Drupal\Component\Utility\Html;
+
 /**
  * Route controller for search.
  */

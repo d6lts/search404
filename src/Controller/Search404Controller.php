@@ -265,7 +265,7 @@ class Search404Controller extends ControllerBase {
     if (!empty($extensions)) {
       $keys = preg_replace("/\.($extensions)$/i", '', $keys);
     }
-    $keys = preg_split('/[' . Unicode::PREG_CLASS_WORD_BOUNDARY . ']+/u', $keys);
+    $keys = array($keys);
     // Ignore certain words (use case insensitive search).
     $keys = array_udiff($keys, explode(' ', \Drupal::config('search404.settings')->get('search404_ignore')), 'strcasecmp');
     // Sanitize the keys.

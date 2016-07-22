@@ -81,6 +81,7 @@ class Search404Controller extends ControllerBase {
         if (\Drupal::moduleHandler()->moduleExists('search_by_page') && \Drupal::config('search404.settings')->get('search404_do_search_by_page')) {
           drupal_set_message(t('The page you requested does not exist. For your convenience, a search was performed using the query %keys.', array('%keys' => Html::escape($keys))), 'error', FALSE);
           $this->search404Goto('search_pages/' . $keys);
+          break;
         }
         else {
           // Build search results, if keywords or other search parameters
@@ -107,12 +108,13 @@ class Search404Controller extends ControllerBase {
                 )
             ) {
               if (!\Drupal::config('search404.settings')->get('search404_disable_error_message')) {
-                drupal_set_message(t('The page you requested does not exist. A search for %keys resulted in this page.', array('%keys' => Html::escape($keys))), 'status', FALSE);
+                drupal_set_message(t('The page you requested does not exist. A search for %keys resulted in this page.', array('%keys' => Html::escape($keys))), 'error', FALSE);
               }
               if (isset($results[0]['#result']['link'])) {
                 $result_path = $results[0]['#result']['link'];
               }
               $this->search404Goto($result_path);
+              break;
             }
             else {
               if (!\Drupal::config('search404.settings')->get('search404_disable_error_message')) {

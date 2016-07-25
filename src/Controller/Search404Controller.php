@@ -1,10 +1,4 @@
 <?php
-
-/**
- * @file
- * Contains Drupal\search404\Controller\Search404Controller.
- */
-
 namespace Drupal\search404\Controller;
 
 use Drupal\Core\Controller\ControllerBase;

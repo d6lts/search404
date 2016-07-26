@@ -372,6 +372,16 @@ function search404_goto($path = '') {
   }
   else {
     $http_status = 302;
+    if (variable_get('search404_do_custom_search')) {
+      $meta_search404_noindex = array(
+        '#tag' => 'meta',
+        '#attributes' => array(
+           'name' => 'robots',
+           'content' => 'noindex',
+        ),
+      );
+      drupal_add_html_head($meta_search404_noindex, 'meta_search404_noindex');
+    }
   }
   drupal_goto($path, array(), $http_status);
 }

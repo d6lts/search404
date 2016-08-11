@@ -1,4 +1,10 @@
 <?php
+
+/**
+ * @file
+ * Contains \Drupal\search404\Form\Search404Settings.
+ */
+
 namespace Drupal\search404\Form;
 
 use Drupal\Core\Form\ConfigFormBase;
@@ -137,7 +143,8 @@ class Search404Settings extends ConfigFormBase {
       '#description' => t('You can enter a value that will displayed at the title of the webpage e.g. "Page not found".'),
       '#default_value' => \Drupal::config('search404.settings')->get('search404_page_title'),
     );
-    // Show custom text below the search form for the 404 search results page.
+    // Show custom text below the search form for the 404 search
+    // results page.
     $form['advanced']['search404_page_text'] = array(
       '#type' => 'textarea',
       '#title' => t('Custom page text'),
@@ -166,24 +173,24 @@ class Search404Settings extends ConfigFormBase {
    */
   public function submitForm(array &$form, FormStateInterface $form_state) {
     $this->configFactory()->getEditable('search404.settings')
-         ->set('search404_redirect_301', $form_state->getValue('search404_redirect_301'))
-         ->set('search404_do_google_cse', $form_state->getValue('search404_do_google_cse'))
-         ->set('search404_do_search_by_page', $form_state->getValue('search404_do_search_by_page'))
-         ->set('search404_first', $form_state->getValue('search404_first'))
-         ->set('search404_jump', $form_state->getValue('search404_jump'))
-         ->set('search404_use_or', $form_state->getValue('search404_use_or'))
-         ->set('search404_ignore', $form_state->getValue('search404_ignore'))
-         ->set('search404_ignore_query', $form_state->getValue('search404_ignore_query'))
-         ->set('search404_ignore_extensions', $form_state->getValue('search404_ignore_extensions'))
-         ->set('search404_page_text', $form_state->getValue('search404_page_text'))
-         ->set('search404_page_title', $form_state->getValue('search404_page_title'))
-         ->set('search404_regex', $form_state->getValue('search404_regex'))
-         ->set('search404_skip_auto_search', $form_state->getValue('search404_skip_auto_search'))
-         ->set('search404_use_search_engine', $form_state->getValue('search404_use_search_engine'))
-         ->set('search404_disable_error_message', $form_state->getValue('search404_disable_error_message'))
-         ->set('search404_do_custom_search', $form_state->getValue('search404_do_custom_search'))
-         ->set('search404_custom_search_path', $form_state->getValue('search404_custom_search_path'))
-         ->save();
+      ->set('search404_redirect_301', $form_state->getValue('search404_redirect_301'))
+      ->set('search404_do_google_cse', $form_state->getValue('search404_do_google_cse'))
+      ->set('search404_do_search_by_page', $form_state->getValue('search404_do_search_by_page'))
+      ->set('search404_first', $form_state->getValue('search404_first'))
+      ->set('search404_jump', $form_state->getValue('search404_jump'))
+      ->set('search404_use_or', $form_state->getValue('search404_use_or'))
+      ->set('search404_ignore', $form_state->getValue('search404_ignore'))
+      ->set('search404_ignore_query', $form_state->getValue('search404_ignore_query'))
+      ->set('search404_ignore_extensions', $form_state->getValue('search404_ignore_extensions'))
+      ->set('search404_page_text', $form_state->getValue('search404_page_text'))
+      ->set('search404_page_title', $form_state->getValue('search404_page_title'))
+      ->set('search404_regex', $form_state->getValue('search404_regex'))
+      ->set('search404_skip_auto_search', $form_state->getValue('search404_skip_auto_search'))
+      ->set('search404_use_search_engine', $form_state->getValue('search404_use_search_engine'))
+      ->set('search404_disable_error_message', $form_state->getValue('search404_disable_error_message'))
+      ->set('search404_do_custom_search', $form_state->getValue('search404_do_custom_search'))
+      ->set('search404_custom_search_path', $form_state->getValue('search404_custom_search_path'))
+      ->save();
     parent::submitForm($form, $form_state);
   }
 

@@ -8,16 +8,16 @@ INSTALLATION:
 1. Extract the tar.gz into your 'modules' or directory.
 2. Enable the module at 'administer >> site building >> modules'.
 3. The module will automatically replace the path to your
-   404 page with "search404"
+   404 page with "search404".
 
 CONFIGURATION
 -------------
-1. Visit 'administer >> site configuration >> search 404 settings'
+1. Visit 'administer >> site configuration >> search 404 settings'.
 
 UNINSTALLTION:
 --------------
 1. Disable the module.
-2. Uninstall the module, which will blank the the 404 page
+2. Uninstall the module, which will blank the 404 page.
 
 CREDITS:
 --------

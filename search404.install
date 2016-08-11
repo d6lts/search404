@@ -1,18 +1,19 @@
 <?php
+
 /**
  * @file
  * Install, update and uninstall functions for the search404 module.
  */
 
 /**
- * Setup Search 404 by changing Drupal's 404-page to search404.
+ * Implements hook_install().
  */
 function search404_install() {
   \Drupal::configFactory()->getEditable('system.site')->set('page.404', '/search404')->save();
 }
 
 /**
- * Unsinstall the changes for search404.
+ * Implements hook_uninstall().
  */
 function search404_uninstall() {
   $site_404 = \Drupal::config('system.site')->get('page.404');

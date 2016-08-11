@@ -1,4 +1,10 @@
 <?php
+
+/**
+ * @file
+ * Contains \Drupal\search404\Controller\Search404Controller.
+ */
+
 namespace Drupal\search404\Controller;
 
 use Drupal\Core\Controller\ControllerBase;
@@ -129,7 +135,7 @@ class Search404Controller extends ControllerBase {
         $build['content']['#weight'] = -100;
       }
 
-      // Text for,if search results is empty.
+      // Text for, if search results is empty.
       $no_results = '';
       if (!\Drupal::config('search404.settings')->get('search404_skip_auto_search')) {
         $no_results = t('<ul>

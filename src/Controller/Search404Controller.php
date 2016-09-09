@@ -162,8 +162,8 @@ class Search404Controller extends ControllerBase {
         ),
       );
 
-      $build['pager'] = array(
-        '#theme' => 'pager',
+      $build['pager_pager'] = array(
+        '#type' => 'pager',
       );
       $build['#attached']['library'][] = 'search/drupal.search.results';
     }

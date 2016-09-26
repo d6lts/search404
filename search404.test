@@ -1,0 +1,43 @@
+<?php
+
+/**
+ * @file
+ * Tests for search404.module.
+ */
+
+class Search404TestCase extends DrupalWebTestCase {
+  public static function getInfo() {
+    return array(
+      'name' => 'Single result redirect',
+      'description' => 'Test if, Jump directly to the search result when there is only one result ',
+      'group' => 'Search404'
+    );
+  }
+
+  /**
+   * Implementation setUp().
+   */
+  public function setUp() {
+    parent::setUp('search404', $permissions);
+    // Create users.
+    $this->big_user = $this->drupalCreateUser(array('administer search'));
+  }
+
+  public function testSearch404ConfigPage() {
+    $this->accessSearch404ConfigPage();
+  }
+
+  public function accessSearch404ConfigPage() {
+    // First retrieve the page once
+    $this->drupalGet('admin/config/search/search404');
+  }
+
+  public function testSingleResultCheck() {
+    $this->drupalLogin($this->big_user);
+    $this->drupalPost(
+      'admin/config/search/search404',
+      array('search404_jump' => TRUE),
+      t('Save configuration')
+    );
+  }
+}

@@ -4,6 +4,7 @@ core = 7.x
 
 files[] = search404.module
 files[] = search404.install
+files[] = search404.test
 
 configure = admin/config/search/search404
 

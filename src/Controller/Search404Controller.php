@@ -174,16 +174,23 @@ class Search404Controller extends ControllerBase {
       // exists or the user has access rights.
       $custom_search_path_no_query = preg_replace('/\?.*/', '', $custom_search_path);
       $current_path = \Drupal::service('path.current')->getPath();
+      $current_path = preg_replace('/[!@#$^&*();\'"+_,]/', '', $current_path);
 
-      // If search with OR condition eneabled.
+      // All search keywords with space
+      // and slash are replacing with hyphen in url redirect.
       $search_keys = '';
+      // If search with OR condition enabled.
       if (\Drupal::config('search404.settings')->get('search404_use_or')) {
-        $search_keys = str_replace(' OR ', '/', $keys);
+        $search_details = $this->search404CustomRedirection(' OR ', $current_path, $keys);
       }
       else {
-        $search_keys = str_replace(' ', '/', $keys);
+        $search_details = $this->search404CustomRedirection(' ', $current_path, $keys);
       }
-      if ($current_path == "/" . $keys || ($search_keys != '' && $current_path == "/" . $search_keys)) {
+      $current_path = $search_details['path'];
+      $search_keys = $search_details['keys'];
+
+      // Redirect to the custom path.
+      if ($current_path == "/" . $keys || $current_path == "/" . $search_keys) {
         if (!\Drupal::config('search404.settings')->get('search404_disable_error_message')) {
           drupal_set_message(t('The page you requested does not exist. For your convenience, a search was performed using the query %keys.', array('%keys' => Html::escape($keys))), 'error', FALSE);
         }
@@ -194,6 +201,9 @@ class Search404Controller extends ControllerBase {
           $custom_search_path = str_replace('@keys', $keys, $custom_search_path);
         }
         $this->search404Goto("/" . $custom_search_path);
+      }
+      if (!\Drupal::config('search404.settings')->get('search404_disable_error_message') && empty($keys)) {
+        drupal_set_message(t('The page you requested does not exist. Invalid keywords used.'), 'error', FALSE);
       }
     }
 
@@ -265,6 +275,7 @@ class Search404Controller extends ControllerBase {
     // use keys from the path that resulted in the 404.
     if (empty($keys)) {
       $path = \Drupal::service('path.current')->getPath();
+      $path = preg_replace('/[!@#$^&*();\'"+_,]/', '', $path);
       $paths = explode('/', $path);
       // Removing the custom search path value from the keyword search.
       if (\Drupal::config('search404.settings')->get('search404_do_custom_search')) {
@@ -313,24 +324,68 @@ class Search404Controller extends ControllerBase {
       $keys[$a] = Html::escape($b);
     }
 
+    // When using keywords with OR operator.
     if (\Drupal::config('search404.settings')->get('search404_use_or')) {
-      $path = \Drupal::service('path.current')->getPath();
-      $keys = explode('/', substr($path, 1));
+      $keys = trim(implode(' OR ', $keys));
+      // Replace %20 and - with  OR operator.
+      $keys = preg_replace('/-|%20/', ' OR ', $keys);
 
-      // Removing the custom search path value from the keyword search.
+      // Removing the custom path string from the keywords.
       if (\Drupal::config('search404.settings')->get('search404_do_custom_search')) {
         $custom_search_path = \Drupal::config('search404.settings')->get('search404_custom_search_path');
         $custom_search = explode('/', $custom_search_path);
-        $path = array_diff($custom_search, array("@keys"));
-        $keys = array_diff($keys, $path);
+        $custom_path = array_diff($custom_search, array("@keys"));
+        $keys = str_replace($custom_path[0], '', $keys);
+        $keys = trim(rtrim($keys, ' OR '));
       }
-
-      $keys = trim(implode(' OR ', $keys));
     }
     else {
       $keys = trim(implode(' ', $keys));
+      // Replace %20 and - with space.
+      $keys = preg_replace('/-|%20/', ' ', $keys);
+
+      // Removing the custom path string from the keywords.
+      if (\Drupal::config('search404.settings')->get('search404_do_custom_search')) {
+        $custom_search_path = \Drupal::config('search404.settings')->get('search404_custom_search_path');
+        $custom_search = explode('/', $custom_search_path);
+        $custom_path = array_diff($custom_search, array("@keys"));
+        $keys = trim(str_replace($custom_path[0], '', $keys));
+      }
     }
     return $keys;
   }
 
+  /**
+   * Helper function to make a redirection path with custom path.
+   *
+   * @param string $search_type
+   *   Which type of search.
+   * @param string $path
+   *   Searched url or keyword in the address bar.
+   * @param string $keys
+   *   Searching keywords.
+   *
+   *  @return array $search
+   *   Custom redirection path and key for comparison.
+   */
+  public function search404CustomRedirection($search_type, $path, $keys) {
+    $search['keys'] = $keys;
+    $search['path'] = $path;
+
+    // If search keywords has space or hyphen or slash.
+    if (preg_match('/-|%20/', $search['path']) || stripos($search['path'], '/') !== false) {
+      $search['keys'] = str_replace($search_type, '-', $search['keys']);
+      if (preg_match('/%20/', $search['path'])) {
+        $search['path'] = str_replace('%20', '-', $search['path']);
+      }
+      // If search keywords has slash.
+      if (stripos($search['path'], '/') !== false) {
+        $search['keys'] = str_replace($search_type, '-', $search['keys']);
+        $search['path'] = str_replace('/', '-', $search['path']);
+        $search['path'] = substr_replace($search['path'],'/',0,1);
+        $search['path'] = rtrim($search['path'], "-");
+      }
+    }
+    return $search;
+  }
 }

@@ -1,10 +1,4 @@
 <?php
-
-/**
- * @file
- * Contains \Drupal\search404\Controller\Search404Controller.
- */
-
 namespace Drupal\search404\Controller;
 
 use Drupal\Core\Controller\ControllerBase;
@@ -226,7 +220,7 @@ class Search404Controller extends ControllerBase {
       $response->setStatusCode(301);
     }
     $response->send();
-    return;
+    return '';
   }
 
   /**
@@ -365,7 +359,7 @@ class Search404Controller extends ControllerBase {
    * @param string $keys
    *   Searching keywords.
    *
-   *  @return array $search
+   * @return array $search
    *   Custom redirection path and key for comparison.
    */
   public function search404CustomRedirection($search_type, $path, $keys) {
@@ -373,19 +367,20 @@ class Search404Controller extends ControllerBase {
     $search['path'] = $path;
 
     // If search keywords has space or hyphen or slash.
-    if (preg_match('/-|%20/', $search['path']) || stripos($search['path'], '/') !== false) {
+    if (preg_match('/-|%20/', $search['path']) || stripos($search['path'], '/') !== FALSE) {
       $search['keys'] = str_replace($search_type, '-', $search['keys']);
       if (preg_match('/%20/', $search['path'])) {
         $search['path'] = str_replace('%20', '-', $search['path']);
       }
       // If search keywords has slash.
-      if (stripos($search['path'], '/') !== false) {
+      if (stripos($search['path'], '/') !== FALSE) {
         $search['keys'] = str_replace($search_type, '-', $search['keys']);
         $search['path'] = str_replace('/', '-', $search['path']);
-        $search['path'] = substr_replace($search['path'],'/',0,1);
+        $search['path'] = substr_replace($search['path'], '/', 0, 1);
         $search['path'] = rtrim($search['path'], "-");
       }
     }
     return $search;
   }
+
 }

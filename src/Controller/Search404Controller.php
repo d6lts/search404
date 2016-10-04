@@ -118,6 +118,11 @@ class Search404Controller extends ControllerBase {
           }
         }
       }
+      else {
+        if (!\Drupal::config('search404.settings')->get('search404_disable_error_message')) {
+          drupal_set_message(t('The page you requested does not exist. For your convenience, a search was performed using the query %keys.', array('%keys' => Html::escape($keys))), 'error', FALSE);
+        }
+      }
 
       // Construct the search form.
       $build['search_form'] = $this->entityFormBuilder()->getForm($entity, 'search');

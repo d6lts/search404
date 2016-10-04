@@ -89,6 +89,16 @@ class Search404Settings extends ConfigFormBase {
       '#description' => t('Disable the Drupal error message when search results are shown on a 404 page.'),
       '#default_value' => \Drupal::config('search404.settings')->get('search404_disable_error_message'),
     );
+
+    // To add custom error message.
+    $form['search404_custom_error_message'] = array(
+      '#title' => t('Custom error message'),
+      '#type' => 'textfield',
+      '#placeholder' => 'For example, Invalid search for @keys, Sorry the page does not exist, etc.',
+      '#description' => t('A custom error message instead of default Drupal message, that should be displayed when search results are shown on a 404 page, use "@keys" to insert the searched key value if necessary.'),
+      '#default_value' => \Drupal::config('search404.settings')->get('search404_custom_error_message'),
+    );
+
     $form['advanced'] = array(
       '#type' => 'fieldset',
       '#title' => t('Advanced settings'),
@@ -184,6 +194,7 @@ class Search404Settings extends ConfigFormBase {
       ->set('search404_disable_error_message', $form_state->getValue('search404_disable_error_message'))
       ->set('search404_do_custom_search', $form_state->getValue('search404_do_custom_search'))
       ->set('search404_custom_search_path', $form_state->getValue('search404_custom_search_path'))
+      ->set('search404_custom_error_message', $form_state->getValue('search404_custom_error_message'))
       ->save();
     parent::submitForm($form, $form_state);
   }

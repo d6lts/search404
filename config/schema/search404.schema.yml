@@ -32,3 +32,5 @@ search404.settings:
       type: boolean
     search404_do_search_by_page:
       type: boolean
+    search404_custom_error_message:
+      type: string

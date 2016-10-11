@@ -155,6 +155,16 @@ class Search404Settings extends ConfigFormBase {
       '#default_value' => \Drupal::config('search404.settings')->get('search404_page_text'),
       '#description' => t('You can enter a custom text message that can be displayed at the top of the search results, HTML formatting can be used.'),
     );
+
+    // Add a redirect url option for handling empty results display.
+    $form['advanced']['search404_page_redirect'] = array(
+      '#title' => t('Add a redirection url for empty search results.'),
+      '#type' => 'textfield',
+      '#placeholder' => 'For example, /node, /node/10, etc.',
+      '#description' => t('You can enter a valid url with a leading "/" to display instead of empty result.'),
+      '#default_value' => \Drupal::config('search404.settings')->get('search404_page_redirect'),
+    );
+
     // Helps reset the site_404 variable to search404 in case the
     // user changes it manually.
     $form['site_404'] = array(
@@ -170,6 +180,22 @@ class Search404Settings extends ConfigFormBase {
     );
 
     return parent::buildForm($form, $form_state);
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function validateForm(array &$form, FormStateInterface $form_state) {
+    parent::validateForm($form, $form_state);
+    if (!empty($form_state->getValue('search404_page_redirect'))) {
+      $path = $form_state->getValue('search404_page_redirect');
+      if (strpos($path, ' ') === 0) {
+        $form_state->setErrorByName('search404_page_redirect', t('Invalid url : Redirect url should not be a space or not start with a space.'));
+      }
+      if (strpos($path, '/') !== 0) {
+        $form_state->setErrorByName('search404_page_redirect', t('Invalid url : Redirect url should be start with a slash.'));
+      }
+    }
   }
 
   /**
@@ -195,6 +221,7 @@ class Search404Settings extends ConfigFormBase {
       ->set('search404_do_custom_search', $form_state->getValue('search404_do_custom_search'))
       ->set('search404_custom_search_path', $form_state->getValue('search404_custom_search_path'))
       ->set('search404_custom_error_message', $form_state->getValue('search404_custom_error_message'))
+      ->set('search404_page_redirect', $form_state->getValue('search404_page_redirect'))
       ->save();
     parent::submitForm($form, $form_state);
   }

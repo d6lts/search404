@@ -74,8 +74,7 @@ class Search404Controller extends ControllerBase {
         // If custom search enabled.
         if (\Drupal::moduleHandler()->moduleExists('search_by_page') && \Drupal::config('search404.settings')->get('search404_do_search_by_page')) {
           $this->search404CustomErrorMessage($keys);
-          $this->search404Goto('search_pages/' . $keys);
-          return;
+          return $this->search404Goto('search_pages/' . $keys);
         }
         else {
           // Build search results, if keywords or other search parameters
@@ -105,11 +104,16 @@ class Search404Controller extends ControllerBase {
               if (isset($results[0]['#result']['link'])) {
                 $result_path = $results[0]['#result']['link'];
               }
-              $this->search404Goto($result_path);
-              return;
+              return $this->search404Goto($result_path);
             }
             else {
               $this->search404CustomErrorMessage($keys);
+              // Redirecting the page for empty search404 result,
+              // if redirect url is configured.
+              if (\Drupal::config('search404.settings')->get('search404_page_redirect')) {
+                $redirect_path = \Drupal::config('search404.settings')->get('search404_page_redirect');
+                return $this->search404Goto($redirect_path);
+              }
             }
           }
         }
@@ -188,7 +192,7 @@ class Search404Controller extends ControllerBase {
         if ($search_keys != '') {
           $custom_search_path = str_replace('@keys', $search_keys, $custom_search_path);
         }
-        $this->search404Goto("/" . $custom_search_path);
+        return $this->search404Goto("/" . $custom_search_path);
       }
     }
 
@@ -210,8 +214,7 @@ class Search404Controller extends ControllerBase {
     if (\Drupal::config('search404.settings')->get('search404_redirect_301')) {
       $response->setStatusCode(301);
     }
-    $response->send();
-    return '';
+    return $response->send();
   }
 
   /**
@@ -386,10 +389,10 @@ class Search404Controller extends ControllerBase {
       // Invalid keys used, actually this happens
       // when no keys are populated to search with custom path.
       if (empty($keys)) {
-        $show_error_message = drupal_set_message(t('The page you requested does not exist. Invalid keywords used.'), 'error', FALSE);
+        $show_error_message = $this->t('The page you requested does not exist. Invalid keywords used.');
       }
       else {
-        $show_error_message = drupal_set_message(t('The page you requested does not exist. For your convenience, a search was performed using the query %keys.', array('%keys' => Html::escape($keys))), 'error', FALSE);
+        $show_error_message = $this->t('The page you requested does not exist. For your convenience, a search was performed using the query %keys.', array('%keys' => Html::escape($keys)));
       }
     }
     else {

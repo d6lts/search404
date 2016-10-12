@@ -277,3 +277,48 @@ class DisableErrorMsgTestCase extends DrupalWebTestCase {
     );
   }
 }
+
+class SearchByPageOn404TestCase extends DrupalWebTestCase {
+  public static function getInfo() {
+    return array(
+      'name' => 'Search by page when a 404 occurs',
+      'description' => 'Do a "Search by page" Search instead of a Drupal Search when a 404 occurs',
+      'group' => 'Search404'
+    );
+  }
+
+  /**
+   * Implementation setUp().
+   */
+  public function setUp() {
+    parent::setUp('search404', $permissions);
+    // Create users.
+    $this->big_user = $this->drupalCreateUser(array('administer search'));
+  }
+
+  public function testSearch404ConfigPage() {
+    $this->accessSearch404ConfigPage();
+  }
+
+  public function accessSearch404ConfigPage() {
+    // First retrieve the page once
+    $this->drupalGet('admin/config/search/search404');
+  }
+
+  public function testSearchByPageOn404Check() {
+    $this->drupalLogin($this->big_user);
+    $search404_do_search_by_page = TRUE;
+    $this->drupalGet('admin/config/search/search404');
+    module_enable(array('search_by_page'), FALSE);
+    $this->assertTrue(module_exists('search_by_page'), 'Enable search_by_page module.');
+    $this->assertFieldByName('search404_do_search_by_page', $search404_do_search_by_page, 'Validate Search by page buid field');
+    $edit = array(
+      'search404_do_search_by_page' => $search404_do_search_by_page,
+    );
+    $this->drupalPost(
+      'admin/config/search/search404',
+      $edit,
+      t('Save configuration')
+    );
+  }
+}

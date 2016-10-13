@@ -1,14 +1,15 @@
 <?php
-
-/* *
+/**
  * @file
- * The search404 module search page related functions
+ * The search404 module search page related functions.
  */
 
 /**
- * Get the keys that are to be used for the search based either
+ * Get the keys that are to be used for the search.
+ *
+ * The search is based either
  * on the keywords from the URL or from the keys from the search
- * that resulted in the 404
+ * that resulted in the 404.
  */
 function search404_get_keys() {
   $keys = '';
@@ -26,18 +27,18 @@ function search404_get_keys() {
     drupal_alter('search404_keys', $keys);
   }
 
-  // Abort query on certain extensions, e.g: gif jpg jpeg png
+  // Abort query on certain extensions, e.g: gif jpg jpeg png.
   $extensions = explode(' ', variable_get('search404_ignore_query', 'gif jpg jpeg bmp png'));
   $extensions = trim(implode('|', $extensions));
   if (!empty($extensions) && preg_match("/\.($extensions)$/i", $keys)) {
     return FALSE;
   }
   /* TODO - How does this work in D7
-  //Remove the Language Prefix Appended to Search String (http://drupal.org/node/560426)
+  // Remove the Language Prefix Appended to
+  // Search String (http://drupal.org/node/560426)
   if (LANGUAGE_NEGOTIATION_PATH_DEFAULT && $language->language) {
-    $keys = preg_replace("/^" . $language->language . "\//i", '', $keys);
-  }
-  */
+  $keys = preg_replace("/^" . $language->language . "\//i", '', $keys);
+  }*/
   $regex_filter = variable_get('search404_regex', '');
   if (!empty($regex_filter)) {
     $keys = preg_replace("/" . $regex_filter . "/i", '', $keys);
@@ -53,7 +54,7 @@ function search404_get_keys() {
 
   // Ignore certain words (use case insensitive search).
   $keys = array_udiff($keys, explode(' ', variable_get('search404_ignore', t('and or the'))), 'strcasecmp');
-  //Sanitize the keys
+  // Sanitize the keys.
   foreach ($keys as $a => $b) {
     $keys[$a] = check_plain($b);
   }
@@ -92,17 +93,17 @@ function search404_search_engine_query() {
 }
 
 /**
- * Displays an error message of page not found
+ * Displays an error message of page not found.
  *
- * @param string $keys Keywords
- * @param boolean $jump_to_result
- *  This param indicates wheather the search is jumped to a particlar search
+ * @param string $keys
+ *   Keywords.
+ * @param bool $jump_to_result
+ *   This param indicates wheather the search is jumped to a particlar search.
  */
 function search404_error_message($keys, $jump_to_result = FALSE) {
   if ($jump_to_result) {
-    $default_message = t('The page you requested does not exist. For your '
-      . 'convenience, a search was performed using the query'
-      . ' @keys. Not quite what you were looking for? !other_results.',
+    $default_message = t('The page you requested does not exist.
+    For your  convenience, a search was performed using the query @keys. Not quite what you were looking for? !other_results.',
       array(
         '@keys' => $keys,
         '!other_results' => l(
@@ -114,20 +115,18 @@ function search404_error_message($keys, $jump_to_result = FALSE) {
               'destination' => $keys,
             ),
           )
-        )
+        ),
       )
     );
   }
   else {
-    $default_message = t('The page you requested does not exist. For your '
-        . 'convenience, a search was performed using the query'
-        . ' @keys.',
-        array(
-          '@keys' => $keys,
-        ));
+    $default_message = t('The page you requested does not exist. For your convenience, a search was performed using the query @keys.',
+    array(
+      '@keys' => $keys,
+    ));
   }
   $show_message = variable_get('search404_search_message', '');
-  if(!empty($show_message)) {
+  if (!empty($show_message)) {
     $show_message = format_string($show_message, array('@keys' => $keys));
   }
   else {
@@ -138,8 +137,9 @@ function search404_error_message($keys, $jump_to_result = FALSE) {
 
 /**
  * Main search function.
+ *
  * Started with: http://drupal.org/node/12668
- * Updated to be more similar to search_view
+ * Updated to be more similar to search_view.
  */
 function search404_page() {
   $output = '';
@@ -166,9 +166,10 @@ function search404_page() {
     $default_search = search_get_default_module_info();
     $type_search = $default_search['module'];
 
-    // Get throttle status
+    // Get throttle status.
     $throttle = module_invoke('throttle', 'status');
-    // If search keys are present and site is not throttled and automatic searching is not disabled.
+    // If search keys are present and site is not throttled and
+    // automatic searching is not disabled.
     if ($keys && !$throttle && !variable_get('search404_skip_auto_search', FALSE)) {
       if (module_exists('search_by_page') && variable_get('search404_do_search_by_page', FALSE)) {
         search404_error_message($keys);
@@ -190,7 +191,7 @@ function search404_page() {
           $results = $results['search_results'];
         }
         // Some modules like ds_search (#1253426) returns its own results format
-        // and may not have $results['#results']
+        // and may not have $results['#results'].
         if (isset($results['#results'])) {
           // Check if there are any specific paths are set where only we need to
           // jump to the first result.
@@ -205,9 +206,9 @@ function search404_page() {
 
           // Jump to first result if there are results and
           // if there is only one result and if jump to first is selected or
-          // if there are more than one results and force jump to first is selected
-          // and current path is set to jump to the first result.
-          // AND if no_jump is not set.
+          // if there are more than one results and force jump to first is
+          // selected and current path is set to jump to the first result
+          // and if no_jump is not set.
           if (is_array($results['#results']) &&
             (
               (count($results['#results']) == 1 && variable_get('search404_jump', FALSE))
@@ -231,21 +232,23 @@ function search404_page() {
         }
         else {
           // Normal $results['#results'] doesn't exist, we will not redirect
-          // and just hope the strange search module knows how to render its output.
+          // and just hope the strange search module knows
+          // how to render its output.
           search404_error_message($keys);
         }
       }
     }
     // Construct the search form.
     if ($type_search == 'apachesolr_search') {
-      // Get Apachesolr search form
+      // Get Apachesolr search form.
       module_load_include('inc', 'apachesolr_search', 'apachesolr_search.pages');
       $search_page = apachesolr_search_page_load(apachesolr_search_default_search_page());
       $form = drupal_get_form('apachesolr_search_custom_page_search_form', $search_page, $keys);
 
-      // Set the action to point to the search page, otherwise form will submit to current 404 page
-      // Newer versions of apache_solr is returning search_page as an array while earlier versions
-      // to return an object. (#1923954)
+      // Set the action to point to the search page, otherwise form will submit
+      // to current 404 page.
+      // Newer versions of apache_solr is returning search_page as an array
+      // while earlier versions return an object. (#1923954)
       if (is_array($search_page)) {
         $search_path = $search_page['search_path'];
       }
@@ -257,15 +260,16 @@ function search404_page() {
       // Remove the form value since it will include
       // the destination directive and force a search submit button loop
       // If not reset properly, the resulting search form will have a
-      // destination pointing back to the broken page that triggered the 404
+      // destination pointing back to the broken page that triggered the 404.
       $form['basic']['get']['#value'] = json_encode(array());
     }
     else {
-      // Get the default search form
+      // Get the default search form.
       $form = drupal_get_form('search_form', NULL, $keys, $type_search);
     }
     $output = render($form) . render($results);
-    // Add custom text before the search form and results if custom text has been set
+    // Add custom text before the search form and
+    // results if custom text has been set.
     $search404_page_text = variable_get('search404_page_text', '');
     if (!empty($search404_page_text)) {
       $output = '<div id="search404-page-text">' . $search404_page_text . '</div>' . $output;
@@ -273,8 +277,8 @@ function search404_page() {
   }
   if (variable_get('search404_do_custom_search', FALSE)) {
     $custom_search_path = variable_get('search404_custom_search_path', 'search/@keys');
-    // Remove query parameters before checking whether the search path exists or the user
-    // has access rights.
+    // Remove query parameters before checking whether the search path exists or
+    // the user has access rights.
     $custom_search_path_no_query = preg_replace('/\?.*/', '', $custom_search_path);
     if (drupal_valid_path($custom_search_path_no_query)) {
       search404_error_message($keys);
@@ -282,7 +286,7 @@ function search404_page() {
       search404_goto($custom_search_path);
     }
     else {
-      // get the search results
+      // Get the search results.
       $results = search404_results($keys, $type_search);
     }
   }
@@ -297,9 +301,13 @@ function search404_page() {
 /**
  * Get the results for a search.
  *
- * @param array $keys The search keys
- * @param string $type_search The search module to search
- * @return array Renderable array of search results
+ * @param array $keys
+ *   The search keys.
+ * @param string $type_search
+ *   The search module to search.
+ *
+ * @return array $results
+ *   Renderable array of search results.
  */
 function search404_results($keys, $type_search) {
   // Called for apache solr, lucene, xapian and core search.
@@ -309,7 +317,7 @@ function search404_results($keys, $type_search) {
     $results = $results['search_results'];
   }
   // Some modules like ds_search (#1253426) returns its own results format
-  // and may not have $results['#results']
+  // and may not have $results['#results'].
   if (isset($results['#results'])) {
     // Jump to first result if there are results and
     // if there is only one result and if jump to first is selected or
@@ -376,8 +384,8 @@ function search404_goto($path = '') {
       $meta_search404_noindex = array(
         '#tag' => 'meta',
         '#attributes' => array(
-           'name' => 'robots',
-           'content' => 'noindex',
+          'name' => 'robots',
+          'content' => 'noindex',
         ),
       );
       drupal_add_html_head($meta_search404_noindex, 'meta_search404_noindex');

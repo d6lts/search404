@@ -1,8 +1,7 @@
 <?php
-
-/* *
+/**
  * @file
- * Administration page specific functions
+ * Administration page specific functions.
  */
 
 /**
@@ -24,7 +23,7 @@ function search404_settings() {
   $form['search404_first_on_paths'] = array(
     '#type' => 'textarea',
     '#title' => t('Jump directly to the first search result only on the listed paths.'),
-    '#description' => t(' Enter one path per line. The "*" character is a wildcard. Example paths are blog for the blog page and blog/* for every personal blog.'),
+    '#description' => t('Enter one path per line. The "*" character is a wildcard. Example paths are blog for the blog page and blog/* for every personal blog.'),
     '#default_value' => variable_get('search404_first_on_paths', ''),
   );
   $form['search404_do_google_cse'] = array(
@@ -72,7 +71,8 @@ function search404_settings() {
     '#description' => t('This experimental feature notably allows to force 404 when using a custom search path.'),
     '#default_value' => variable_get('search404_no_redirect', FALSE),
   );
-  // Added for having a 301 redirect instead of the standard 302 (offered by the drupal_goto).
+  // Added for having a 301 redirect instead of the standard 302
+  // (offered by the drupal_goto).
   $form['search404_redirect_301'] = array(
     '#type' => 'checkbox',
     '#title' => t('Use a 301 Redirect instead of 302 Redirect'),
@@ -177,7 +177,8 @@ function search404_settings() {
     '#default_value' => variable_get('search404_page_text', ''),
     '#description' => t('You can enter a custom text message that can be displayed at the top of the search results, HTML formatting can be used.'),
   );
-  // Helps reset the site_404 variable to search404 in case the user changes it manually.
+  // Helps reset the site_404 variable to search404 in case the user changes
+  // it manually.
   $form['site_404'] = array(
     '#type' => 'hidden',
     '#value' => 'search404',

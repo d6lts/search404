@@ -7,13 +7,15 @@ INSTALLATION:
 -------------
 1. Extract the tar.gz into your 'modules' or directory.
 2. Enable the module at 'administer >> site building >> modules'.
-3. The module will automatically replace the path to your 404 page with "search404".
+3. The module will automatically replace the path to your 404 page with
+   "search404".
 
 CONFIGURATION
 -------------
 1. Visit 'administer >> site configuration >> search 404 settings'
 2. For multilingual sites, enable i18n, i18n_variable and its dependencies.
-3. Visit admin/config/regional/i18n/variable and enable the 2 variables for multilingual.
+3. Visit admin/config/regional/i18n/variable and enable the 2 variables for
+   multilingual.
 4. Translate the variables from step 1.
 
 UNINSTALLATION:

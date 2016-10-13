@@ -1,8 +1,7 @@
 <?php
-/* *
+/**
  * @file
- * The search404 module file, does all the searching
- * when a 404 occurs
+ * Handles all the searching when a 404 occurs.
  */
 
 /**
@@ -63,11 +62,12 @@ function search404_block_view($delta = '') {
 }
 
 /**
- * Return the default search information
+ * Return the default search information.
  *
  * @return array
- *     Returns an array with two items: the result of search_get_default_module_info()
- *     and the default search module
+ *     Returns an array with two items:
+ *     the result of search_get_default_module_info()
+ *     and the default search module.
  */
 function search404_get_default_search() {
   $default_search = search_get_default_module_info();

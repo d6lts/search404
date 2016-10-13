@@ -11,6 +11,9 @@ function search404_install() {
   variable_set('site_404', 'search404');
 }
 
+/**
+ * Implements hook_uninstall().
+ */
 function search404_uninstall() {
   if (variable_get('site_404', '') == 'search404') {
     variable_del('site_404');

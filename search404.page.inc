@@ -106,7 +106,7 @@ function search404_error_message($keys, $jump_to_result = FALSE) {
       array(
         '@keys' => $keys,
         '!other_results' => l(
-          'Other results',
+          t('Other results'),
           'search404',
           array(
             'query' => array(

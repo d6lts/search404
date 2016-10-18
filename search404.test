@@ -584,3 +584,87 @@ class AdvancedGoogleCSESearchOn404TestCase extends DrupalWebTestCase {
   }
 
 }
+
+/**
+ * Test cases for Advanced Settings Search Config on 404.
+ */
+class AdvancedSettingsTestCase extends DrupalWebTestCase {
+
+  /**
+   * Implement getInfo().
+   */
+  public static function getInfo() {
+    return array(
+      'name' => 'Validate advanced settings section',
+      'description' => 'Validate advanced settings section elements in Search404 module config section.',
+      'group' => 'Search404',
+    );
+  }
+
+  /**
+   * Implementation setUp().
+   */
+  public function setUp() {
+    parent::setUp('search404', $permissions);
+    // Create users.
+    $this->big_user = $this->drupalCreateUser(array('administer search'));
+  }
+
+  /**
+   * Test Search404 configuration page.
+   */
+  public function testSearch404ConfigPage() {
+    $this->accessSearch404ConfigPage();
+  }
+
+  /**
+   * Function to access Search404 configuration page.
+   */
+  public function accessSearch404ConfigPage() {
+    // First retrieve the page once.
+    $this->drupalGet('admin/config/search/search404');
+  }
+
+  /**
+   * Test for Advanced Settings on Search404 Config.
+   */
+  public function testAdvancedSettingsCheck() {
+    $this->drupalLogin($this->big_user);
+    $search404_use_or = TRUE;
+    $search404_do_custom_search = TRUE;
+    $search404_custom_search_path = TRUE;
+    $search404_use_search_engine = TRUE;
+    $search404_ignore = TRUE;
+    $search404_ignore_extensions = TRUE;
+    $search404_ignore_query = TRUE;
+    $search404_page_title = TRUE;
+
+    $this->drupalGet('admin/config/search/search404');
+
+    $this->assertFieldByName('search404_use_or', $search404_use_or, 'Validate Use OR between keywords when searching');
+    $this->assertFieldByName('search404_do_custom_search', $search404_do_custom_search, 'Validate "Search" with custom path instead of a Drupal Search when a 404 occurs.');
+    $this->assertFieldByName('search404_use_search_engine', $search404_use_search_engine, 'Validate Use auto-detection of keywords from search engine referer.');
+    $this->assertFieldByName('search404_ignore', $search404_ignore, 'Validate words to ignore.');
+    $this->assertFieldByName('search404_ignore_extensions', $search404_ignore_extensions, 'Validate extensions to ignore.');
+    $this->assertFieldByName('search404_ignore_query', $search404_ignore_query, 'Validate extensions to abort search.');
+    $this->assertFieldByName('search404_page_title', $search404_page_title, 'Validate custom page title.');
+
+    $edit = array(
+      'search404_use_or' => $search404_use_or,
+      'search404_do_custom_search' => $search404_do_custom_search,
+      'search404_custom_search_path' => $search404_custom_search_path,
+      'search404_use_search_engine' => $search404_use_search_engine,
+      'search404_ignore' => $search404_ignore,
+      'search404_ignore_extensions' => $search404_ignore_extensions,
+      'search404_ignore_query' => $search404_ignore_query,
+      'search404_page_title' => $search404_page_title,
+    );
+
+    $this->drupalPost(
+      'admin/config/search/search404',
+      $edit,
+      t('Save configuration')
+    );
+  }
+
+}

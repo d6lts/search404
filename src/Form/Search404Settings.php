@@ -63,7 +63,7 @@ class Search404Settings extends ConfigFormBase {
     $form['search404_custom_search_path'] = array(
       '#type' => 'textfield',
       '#title' => t('Custom search path'),
-      '#description' => t('The custom search path: example: myownsearch/@keys or myownsearch?txt_s=@keys. The token "@keys" will be replaced with the search keys from the URL.'),
+      '#description' => t('The custom search path: example: myownsearch/@keys. The token "@keys" will be replaced with the search keys from the URL.'),
       '#default_value' => \Drupal::config('search404.settings')->get('search404_custom_search_path'),
     );
     // Added for having a 301 redirect instead of the standard 302
@@ -187,6 +187,7 @@ class Search404Settings extends ConfigFormBase {
    */
   public function validateForm(array &$form, FormStateInterface $form_state) {
     parent::validateForm($form, $form_state);
+    // Validation for redirect url.
     if (!empty($form_state->getValue('search404_page_redirect'))) {
       $path = $form_state->getValue('search404_page_redirect');
       if (strpos($path, ' ') === 0) {
@@ -194,6 +195,18 @@ class Search404Settings extends ConfigFormBase {
       }
       if (strpos($path, '/') !== 0) {
         $form_state->setErrorByName('search404_page_redirect', t('Invalid url : Redirect url should be start with a slash.'));
+      }
+    }
+    // Validation for custom search path.
+    if (!empty($form_state->getValue('search404_do_custom_search')) &&
+    !empty($form_state->getValue('search404_custom_search_path'))) {
+      $custom_path = $form_state->getValue('search404_custom_search_path');
+
+      if (empty(preg_match("/\/@keys$/", $custom_path))) {
+        $form_state->setErrorByName('search404_custom_search_path', t('Custom search path should be ends with search key pattern "/@keys".'));
+      }
+      if (strpos($custom_path, '/') === 0) {
+        $form_state->setErrorByName('search404_page_redirect', t('Custom search path should not be start with a slash.'));
       }
     }
   }

@@ -263,7 +263,7 @@ class Search404Controller extends ControllerBase {
     // use keys from the path that resulted in the 404.
     if (empty($keys)) {
       $path = \Drupal::service('path.current')->getPath();
-      $path = preg_replace('/[!@#$^&*();\'"+_,]/', '', $path);
+      $path = preg_replace('/[_+-.,!@#$^&*();\'"?=]|[|]|[{}]|[<>]/', '/', $path);
       $paths = explode('/', $path);
       // Removing the custom search path value from the keyword search.
       if (\Drupal::config('search404.settings')->get('search404_do_custom_search')) {
@@ -276,6 +276,13 @@ class Search404Controller extends ControllerBase {
       else {
         $keys = array_filter($paths);
       }
+      // Split the keys with - and space.
+      $keys = preg_replace('/-|%20/', ' ', $keys);
+      foreach ($keys as $key => $value) {
+        $keys_with_space_hypen[$key] = explode(' ', $value);
+        $keys_with_space_hypen[$key] = array_filter($keys_with_space_hypen[$key]);
+      }
+      $keys = call_user_func_array('array_merge', $keys_with_space_hypen);
     }
 
     // Abort query on certain extensions, e.g: gif jpg jpeg png.
@@ -298,11 +305,8 @@ class Search404Controller extends ControllerBase {
 
     // Ignore certain extensions from query.
     $extensions = explode(' ', \Drupal::config('search404.settings')->get('search404_ignore_extensions'));
-    $extensions = trim(implode('|', $extensions));
     if (!empty($extensions)) {
-      foreach ($keys as $key => $value) {
-        $keys[$key] = preg_replace("/\.($extensions)$/i", '', $value);
-      }
+      $keys = array_diff($keys, $extensions);
     }
 
     // Ignore certain words (use case insensitive search).
@@ -315,8 +319,6 @@ class Search404Controller extends ControllerBase {
     // When using keywords with OR operator.
     if (\Drupal::config('search404.settings')->get('search404_use_or')) {
       $keys = trim(implode(' OR ', $keys));
-      // Replace %20 and - with  OR operator.
-      $keys = preg_replace('/-|%20/', ' OR ', $keys);
 
       // Removing the custom path string from the keywords.
       if (\Drupal::config('search404.settings')->get('search404_do_custom_search')) {
@@ -329,9 +331,6 @@ class Search404Controller extends ControllerBase {
     }
     else {
       $keys = trim(implode(' ', $keys));
-      // Replace %20 and - with space.
-      $keys = preg_replace('/-|%20/', ' ', $keys);
-
       // Removing the custom path string from the keywords.
       if (\Drupal::config('search404.settings')->get('search404_do_custom_search')) {
         $custom_search_path = \Drupal::config('search404.settings')->get('search404_custom_search_path');

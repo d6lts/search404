@@ -56,6 +56,37 @@ class Search404Controller extends ControllerBase {
    */
   public function search404Page(Request $request) {
     $keys = $this->search404GetKeys();
+
+    // If the current path is set as one of the ignore path,
+    // then do not get into the complex search functions.
+    $paths_to_ignore = \Drupal::config('search404.settings')->get('search404_ignore_paths');
+    if (!empty($paths_to_ignore)) {
+      $path_array = preg_split('/\R/', $paths_to_ignore);
+      // If OR case enabled.
+      if (\Drupal::config('search404.settings')->get('search404_use_or')) {
+        $keywords = str_replace(' OR ', '/', $keys);
+      }
+      else {
+        $keywords = str_replace(' ', '/', $keys);
+      }
+      $keywords = strtolower($keywords);
+
+      $ignore_paths = array();
+      foreach ($path_array as $key => $path) {
+        $path = preg_replace('[ |-|_]', '/', $path);
+        $path = strtolower($path);
+        $ignore_paths[$key] = trim($path, '/');
+      }
+
+      // If the page matches to any of the listed paths to ignore,
+      // then return default drupal 404 page title and text.
+      if (in_array($keywords, $ignore_paths)) {
+        $build['#title'] = 'Page not found';
+        $build['#markup'] = 'The requested page could not be found.';
+        return $build;
+      }
+    }
+
     if (\Drupal::moduleHandler()->moduleExists('search') && (\Drupal::currentUser()->hasPermission('search content') || \Drupal::currentUser()->hasPermission('search by page'))) {
 
       // Get and use the default search engine for the site.

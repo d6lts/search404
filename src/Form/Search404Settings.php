@@ -122,6 +122,12 @@ class Search404Settings extends ConfigFormBase {
       '#description' => t('These words will be ignored from the search query. Separate words with a space, e.g.: "and or the".'),
       '#default_value' => \Drupal::config('search404.settings')->get('search404_ignore'),
     );
+    $form['advanced']['search404_ignore_paths'] = array(
+      '#type' => 'textarea',
+      '#title' => t('Specific paths to ignore'),
+      '#description' => t('These paths will be ignored. Site default "Page not found" page will be displayed. Enter one path per line. The "*" character is a wildcard. Example paths are blog for the blog page and blog/* for every personal blog.'),
+      '#default_value' => \Drupal::config('search404.settings')->get('search404_ignore_paths', ''),
+    );
     $form['advanced']['search404_ignore_extensions'] = array(
       '#type' => 'textfield',
       '#title' => t('Extensions to ignore'),
@@ -223,6 +229,7 @@ class Search404Settings extends ConfigFormBase {
       ->set('search404_jump', $form_state->getValue('search404_jump'))
       ->set('search404_use_or', $form_state->getValue('search404_use_or'))
       ->set('search404_ignore', $form_state->getValue('search404_ignore'))
+      ->set('search404_ignore_paths', $form_state->getValue('search404_ignore_paths'))
       ->set('search404_ignore_query', $form_state->getValue('search404_ignore_query'))
       ->set('search404_ignore_extensions', $form_state->getValue('search404_ignore_extensions'))
       ->set('search404_page_text', $form_state->getValue('search404_page_text'))

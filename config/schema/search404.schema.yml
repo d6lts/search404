@@ -36,3 +36,9 @@ search404.settings:
       type: string
     search404_page_redirect:
       type: string
+    search404_page_title:
+      type: string
+    search404_ignore:
+      type: string
+    search404_ignore_paths:
+      type: string

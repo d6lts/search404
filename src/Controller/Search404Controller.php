@@ -296,11 +296,22 @@ class Search404Controller extends ControllerBase {
       }
     }
 
+    // PCRE filter from query.
     $regex_filter = \Drupal::config('search404.settings')->get('search404_regex');
     if (!empty($regex_filter)) {
-      foreach ($keys as $key => $value) {
-        $keys[$key] = preg_replace("/" . $regex_filter . "/i", '', $value);
+      // Get filtering patterns as array.
+      $filter_data = explode('[', $regex_filter);
+      for ($i = 0; $i < count($filter_data); $i++) {
+        if (!empty($filter_data[$i])) {
+          $filter_query = explode(']', $filter_data[$i]);
+          // Make the pattern for replacement.
+          $regex_pattern[0] = '/' . $filter_query[0] . '/ix';
+          $filter_patterns[] = trim($regex_pattern[0]);
+        }
       }
+      // Pattern filtering.
+      $keys = preg_replace($filter_patterns, '', $keys);
+      $keys = array_filter($keys);
     }
 
     // Ignore certain extensions from query.

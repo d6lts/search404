@@ -110,23 +110,7 @@ function search404_settings() {
     '#title' => t('Use OR between keywords when searching'),
     '#default_value' => variable_get('search404_use_or', FALSE),
   );
-  $form['advanced']['search404_do_custom_search'] = array(
-    '#type' => 'checkbox',
-    '#title' => t('Do a "Search" with custom path instead of a Drupal Search when a 404 occurs'),
-    '#description' => t('Redirect the user to a Custom search path to be entered below. Can be used to open a view with path parameter.'),
-    '#default_value' => variable_get('search404_do_custom_search', FALSE),
-  );
-  $form['advanced']['search404_custom_search_path'] = array(
-    '#type' => 'textfield',
-    '#title' => t('Custom search path'),
-    '#description' => t('The custom search path: example: myownsearch/@keys or myownsearch?txt_s=@keys. The token "@keys" will be replaced with the search keys from the URL.'),
-    '#default_value' => variable_get('search404_custom_search_path', 'search/@keys'),
-    '#states' => array(
-      'visible' => array(
-        ':input[name="search404_do_custom_search"]' => array('checked' => TRUE),
-      ),
-    ),
-  );
+
   $form['advanced']['search404_use_search_engine'] = array(
     '#type' => 'checkbox',
     '#title' => t('Use auto-detection of keywords from search engine referer'),

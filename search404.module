@@ -5,6 +5,28 @@
  */
 
 /**
+ * Implements hook_help().
+ */
+function search404_help($path, $arg) {
+  $output = '';
+  switch ($path) {
+    case 'admin/help#search404':
+      $output .= '<h3>' . t('About') . '</h3>';
+      $output .= '<p>' . t('Instead of showing a standard "Page not found"
+        error page, this module performs a search on the keywords in the URL
+        for every 404 result. The <a href="@link">Search 404 Settings Page</a>
+        let the administrator to handle each keywords and URLs in 404 with necessary ignores, aborts, redirects etc.',
+      array('@link' => url('admin/config/search/search404'))) . '</p>';
+      break;
+
+    case 'admin/config/search/search404':
+      $output .= '<p>' . t('This page provides all 404 configuration for the module.') . '</p>';
+      break;
+  }
+  return $output;
+}
+
+/**
  * Implements hook_menu().
  */
 function search404_menu() {

@@ -275,7 +275,7 @@ function search404_page() {
       $output = '<div id="search404-page-text">' . $search404_page_text . '</div>' . $output;
     }
   }
-  if (variable_get('search404_do_custom_search', FALSE)) {
+  if (variable_get('search404_do_custom_search', FALSE) && !variable_get('search404_skip_auto_search', FALSE)) {
     $custom_search_path = variable_get('search404_custom_search_path', 'search/@keys');
     // Remove query parameters before checking whether the search path exists or
     // the user has access rights.

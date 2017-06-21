@@ -270,7 +270,7 @@ function search404_page() {
     $output = render($form) . render($results);
     // Add custom text before the search form and
     // results if custom text has been set.
-    $search404_page_text = variable_get('search404_page_text', '');
+    $search404_page_text = filter_xss_admin(variable_get('search404_page_text', ''));
     if (!empty($search404_page_text)) {
       $output = '<div id="search404-page-text">' . $search404_page_text . '</div>' . $output;
     }
